@@ -1,6 +1,5 @@
 Screen {
     align: center middle;
-    text-align: center;
 }
 
 Input {
@@ -9,4 +8,16 @@ Input {
 
 Button {
     margin: 1;
+}
+
+Vertical {
+    align: center middle;
+    text-align: center;
+}
+
+Horizontal {
+    align: center middle;
+    text-align: center;
+    height: auto;
+
 }
