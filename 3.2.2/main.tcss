@@ -19,5 +19,8 @@ Horizontal {
     align: center middle;
     text-align: center;
     height: auto;
+}
 
+Header {
+    margin-bottom: 1;
 }

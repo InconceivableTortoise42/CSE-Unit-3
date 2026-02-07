@@ -1,35 +1,99 @@
-from textual.widgets import Header, Label, Input, Button 
-from textual.containers import Center, Horizontal, Vertical
+from textual.widget import Widget
+from textual.widgets import Header, Label, Input, Button, Footer
+from textual.containers import Center, Horizontal, Vertical, VerticalGroup
 from textual.app import App, ComposeResult
 from textual.reactive import reactive
 from textual.screen import Screen
 from post import Post
 
-class Main(Screen):
+class PostWidget(VerticalGroup):
 
+    DEFAULT_CSS = '''
+        PostWidget {
+            width: 60;
+            border: solid $secondary;
+            border-title-color: $primary;
+        } 
+
+        PostWidget:focus {
+            background: $surface;
+        }
+
+        Label {
+            margin: 1 2;
+            text-wrap: wrap;
+            width: 100%;
+            height: auto;
+        }
+    '''
+
+    def __init__(self, post: Post) -> None:
+        super().__init__()
+        self.post = post
+        self.border_title = self.post.userName
+        timestamp = str(self.post.timestamp)
+        timestamp = timestamp[0:timestamp.rfind(":")]
+        self.border_subtitle = timestamp
+        self.can_focus = True
+
+    def compose(self) -> ComposeResult:
+        yield Label(self.post.message)
+
+class Main(Screen):
     app: "SocialMedia"
 
+    BINDINGS = [
+        ("x", "remove_post", "Remove Post"),
+        ("a", "add_post", "Add Post"),
+        ("down", "focus_next", "Focus next post"),
+        ("up", "focus_previous", "Focus previous post"),
+        ("l", "logout", "Logout")
+    ]
+
+    posts: reactive[int] = reactive(0, recompose = True)
 
     def compose(self) -> ComposeResult:
         yield Header()
+        yield Footer()
         if len(self.app.posts) == 0:
             with Center():
                 yield Label("No Posts have been created!")
             with Center():
                 yield Button("Make Post")
         else:
-            with Center():
-                yield Label(str(self.app.posts[0]))
+            for post in self.app.posts:
+                yield PostWidget(post)
 
     def on_button_pressed(self, button: Button.Pressed) -> None:
         self.app.pop_screen()
         self.app.push_screen("PostCreation")
     
     def updatePosts(self):
-        self.app.notify("Posts updated")
+        self.posts = len(self.app.posts)
         
     def on_mount(self) -> None:
         self.watch(self.app, "posts", self.updatePosts) 
+
+    def action_add_post(self) -> None:
+        self.app.switch_screen("PostCreation")
+
+    def action_remove_post(self) -> None:
+        if isinstance(self.focused, PostWidget):
+            self.app.posts.remove(self.focused.post)
+            self.focused.remove()
+            self.updatePosts()
+
+    def action_logout(self) -> None:
+        self.app.sub_title = ""
+        self.app.username = ""
+        self.app.switch_screen("Login")
+
+    def action_focus_next(self) -> None:
+        self.screen.focus_next()
+
+    def action_focus_previous(self) -> None:
+        self.screen.focus_previous()
+
 
 class PostCreation(Screen):
 
@@ -55,8 +119,7 @@ class PostCreation(Screen):
                 return
 
         inputField.clear()
-        self.app.pop_screen()
-        self.app.push_screen("Main")
+        self.app.switch_screen("Main")
 
 class Login(Screen):
 
@@ -72,15 +135,14 @@ class Login(Screen):
     def on_input_submitted(self, event: Input.Submitted) -> None:
         self.app.username = event.value
         event.input.clear()
-        self.app.pop_screen()
-        self.app.push_screen("Main")
+        self.app.switch_screen("Main")
         self.app.sub_title = event.value
 
 class SocialMedia(App):
 
     username:reactive[str] = reactive("")
 
-    posts:reactive[list[Post]] = reactive([])
+    posts:reactive[list[Post]] = reactive([], always_update = True)
 
     CSS_PATH = "main.tcss"
 
