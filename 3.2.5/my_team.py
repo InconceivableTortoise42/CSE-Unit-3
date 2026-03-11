@@ -22,6 +22,7 @@ def detect_pattern(history):
         matches = 0
         while True: 
             match = search_string.startswith(sample)
+            print(sample, search_string)
             if match:
                 # print(match,"-", sample,"-", search_string)
                 search_string = search_string[len(sample):]
