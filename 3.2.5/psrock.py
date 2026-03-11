@@ -153,9 +153,15 @@ def round_robin(number_of_rounds, *argv):
         total_score[2] += score[2]
       overall_record[team] = total_score
   short_report = "-" * 80 + "\nWin-loss-tie report for round robin:\n\n"
+  winsPerTeam = {
+
+  }
   for team in overall_record:
+    winsPerTeam[team] = overall_record[team][0]
     short_report += str(overall_record[team][0]) + \
                     "-" + str(overall_record[team][1]) + \
                     "-" + str(overall_record[team][2]) + \
                     " " * 8 + team + ": " + strategy_names[team] + "\n"
+  keys = [k for k, v in winsPerTeam.items() if v == max(winsPerTeam.values())]
+  short_report += f"\n Winner: {keys[0]} \n Wins: {max(winsPerTeam.values())}"
   return short_report, report
