@@ -27,22 +27,22 @@ body {
     --gruv-gray: #a89984;
 
     /* Accent palette */
-    --gruv-red: #cc241d;
-    --gruv-green: #98971a;
-    --gruv-yellow: #fabd2f;
-    --gruv-blue: #458588;
-    --gruv-purple: #d3869b;
-    --gruv-aqua: #8ec07c;
-    --gruv-orange: #d65d0e;
+    --gruv-red: hsl(2, 75%, 46%);
+    --gruv-green: hsl(60, 71%, 35%);
+    --gruv-yellow: hsl(42, 95%, 58%);
+    --gruv-blue: hsl(183, 33%, 40%);
+    --gruv-purple: hsl(344, 47%, 68%);
+    --gruv-aqua: hsl(104, 35%, 62%);
+    --gruv-orange: hsl(24, 88%, 45%);
 
-    /* Accent palette light */
-    --gruv-red-light: #cc241d;
-    --gruv-green-light: #98971a;
-    --gruv-yellow-light: #fabd2f;
-    --gruv-blue-light: #458588;
-    --gruv-purple-light: #d3869b;
-    --gruv-aqua-light: #8ec07c;
-    --gruv-orange-light: #d65d0e;
+    /* Accent palette dark */
+    --gruv-red-dark: hsl(2, 75%, 36%);
+    --gruv-green-dark: hsl(60, 71%, 25%);
+    --gruv-yellow-dark: hsl(42, 95%, 48%);
+    --gruv-blue-dark: hsl(183, 33%, 30%);
+    --gruv-purple-dark: hsl(344, 47%, 58%);
+    --gruv-aqua-dark: hsl(104, 35%, 52%);
+    --gruv-orange-dark: hsl(24, 88%, 35%);
 
     /* Bootstrap semantic mappings */
     --bs-body-bg: var(--gruv-bg0);
@@ -65,15 +65,15 @@ body {
     --bs-btn-bg: var(--gruv-blue);
     --bs-btn-border-color: var(--gruv-blue);
 
-    --bs-btn-hover-color: #282828;
-    --bs-btn-hover-bg: var(--gruv-blue);
-    --bs-btn-hover-border-color: #fb4934;
+    --bs-btn-hover-color: var(--gruv-fg1);
+    --bs-btn-hover-bg: var(--gruv-blue-dark);
+    --bs-btn-hover-border-color: var(--gruv-blue-dark);
 
     --bs-btn-focus-shadow-rgb: 254,128,25;
 
     --bs-btn-active-color: #282828;
-    --bs-btn-active-bg: #d65d0e;
-    --bs-btn-active-border-color: #d65d0e;
+    --bs-btn-active-bg: var(--gruv-blue-dark);
+    --bs-btn-active-border-color: var(--gruv-blue-dark);
 
     --bs-btn-disabled-color: #a89984;
     --bs-btn-disabled-bg: #3c3836;
@@ -106,8 +106,8 @@ body {
 
 .btn-warning {
     --bs-btn-color: #282828;
-    --bs-btn-bg: #fabd2f;
-    --bs-btn-border-color: #fabd2f;
+    --bs-btn-bg: var(--gruv-yellow);
+    --bs-btn-border-color: #var(--gruv-yellow);
 
     --bs-btn-hover-bg: #d79921;
     --bs-btn-hover-border-color: #d79921;
