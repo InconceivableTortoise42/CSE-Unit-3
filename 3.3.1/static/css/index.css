@@ -115,3 +115,13 @@ body {
     --bs-btn-active-bg: #b57614;
     --bs-btn-active-border-color: #b57614;
 }
+
+math-field {
+    width: 100%;
+    display: block;
+    outline: none;
+    border-color: var(--gruv-bg2);
+    margin-bottom: 2rem;
+    color: var(--gruv-fg0);
+    font-size: larger;
+}
