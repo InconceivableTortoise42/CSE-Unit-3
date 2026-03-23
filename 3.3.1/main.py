@@ -27,7 +27,7 @@ def practice():
         return redirect(url_for('index'), code = 301)
 
 @app.route('/api/<string:problem_type>', methods=['GET'])
-def get_api(problem_type: str):
+def api(problem_type: str):
     if problem_type in problem_types.keys():
         problem, solution = problem_types[problem_type]()
         json = {
