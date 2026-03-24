@@ -127,9 +127,27 @@ math-field {
     padding: 0;
     font-size: larger;
 
-    --caret-color: var(--gruv-fg0)
+    --caret-color: var(--gruv-fg0);
 }
 
 math-field::part(virtual-keyboard-toggle) {
   display: none;
+}
+
+math-field::part(menu-toggle) {
+  color: var(--gruv-blue-dark);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body p {
+    flex-grow: 1;
+}
+
+.card-body a {
+    width: fit-content;
+    align-self: flex-end;
 }
