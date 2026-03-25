@@ -152,6 +152,15 @@ math-field::part(menu-toggle) {
     align-self: flex-end;
 }
 
+
+.incorrect {
+    animation: shake 0.3s linear, flashRed 1s linear;
+}
+
+.correct{
+    animation: flashGreen 1s linear;
+}
+
 @keyframes flashRed {
    50% {
     background-color: hsla(2, 75%, 36%, 0.4);
@@ -164,10 +173,10 @@ math-field::part(menu-toggle) {
    } 
 }
 
-.flashRed {
-    animation: flashRed 0.5s linear; 
-}
-
-.flashGreen {
-    animation: flashGreen 0.5s linear; 
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }

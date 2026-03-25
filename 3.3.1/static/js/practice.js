@@ -1,4 +1,3 @@
-// import "https://esm.run/@cortex-js/compute-engine";
 import { ComputeEngine } from "https://esm.run/@cortex-js/compute-engine";
 
 const ce = new ComputeEngine();
@@ -6,7 +5,7 @@ const ce = new ComputeEngine();
 const mf = document.getElementById("mathField");
 const apiUrl = `/api/${problemType}`;
 const directionsElement = document.getElementById("directions");
-const menuExclusions = ["mode", "color", "background-color", "accent", "decoration", "variant"];
+const menuExclusions = ["mode", "color", "background-color", "accent", "decoration", "variant", "ce-evaluate", "ce-simplify", "ce-solve"];
 const sumbitButton = document.getElementById("submit");
 const mathProblemElement = document.getElementById("mathProblem");
 const cardHeader = document.getElementById("cardHeader");
@@ -24,8 +23,6 @@ let directions = {
 }
 
 function fetchProblem() {
-    mathProblemElement.classList.add("placeholder")
-    mathProblemElement.innerText = "&nbsp;";
     fetch(apiUrl)
         .then(response => {
             if (!response.ok) {
@@ -38,10 +35,6 @@ function fetchProblem() {
             solutionElement.innerText = data["solution"]
             MathJax.typeset([mathProblemElement, solutionElement]);
             solution = JSON.stringify(ce.parse(data["solution"].replaceAll("$", "")).json);
-
-            window.setTimeout(() => {
-                mathProblemElement.classList.remove("placeholder");
-            }, 1000);
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -56,11 +49,16 @@ function toTitleCase(string) {
 }
 
 function flashFeedback(correctBool) {
+    let className;
     if (correctBool) {
-        card.classList.toggle("flashGreen");
+        className = "correct";
     } else {
-        card.classList.toggle("flashRed");
+        className = "incorrect";
     }
+    card.classList.add(className);
+    setTimeout(() => {
+        card.classList.remove(className);
+    }, 1000);
 }
 
 sumbitButton.addEventListener("click", (event) => {
