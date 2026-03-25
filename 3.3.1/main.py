@@ -6,9 +6,10 @@ app.config.from_object('config')
 
 problem_types = {
      "calculus": mathgenerator.calculus.definite_integral,
-     "algebra": mathgenerator.algebra.basic_algebra,
+     "basic_algebra": mathgenerator.algebra.basic_algebra,
      "arithmetic": mathgenerator.basic_math.addition,
-     "geometry": mathgenerator.geometry.circumference
+     "geometry": mathgenerator.geometry.circumference,
+     "combine_like_terms": mathgenerator.algebra.combine_like_terms
 }
 
 @app.route("/")

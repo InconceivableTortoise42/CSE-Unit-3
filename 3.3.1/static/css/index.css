@@ -151,3 +151,8 @@ math-field::part(menu-toggle) {
     width: fit-content;
     align-self: flex-end;
 }
+
+.card-body button {
+    width: fit-content;
+    align-self: flex-end;
+}
