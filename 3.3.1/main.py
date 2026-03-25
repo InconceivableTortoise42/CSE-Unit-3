@@ -5,11 +5,13 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 problem_types = {
-     "calculus": mathgenerator.calculus.definite_integral,
+     "definite_integrals": mathgenerator.calculus.definite_integral,
      "basic_algebra": mathgenerator.algebra.basic_algebra,
-     "arithmetic": mathgenerator.basic_math.addition,
-     "geometry": mathgenerator.geometry.circumference,
-     "combine_like_terms": mathgenerator.algebra.combine_like_terms
+     "addition": mathgenerator.basic_math.addition,
+     "circumference": mathgenerator.geometry.circumference,
+     "combine_like_terms": mathgenerator.algebra.combine_like_terms,
+     "factoring": mathgenerator.algebra.factoring,
+     "expanding": mathgenerator.algebra.expanding
 }
 
 @app.route("/")

@@ -1,3 +1,8 @@
+// import "https://esm.run/@cortex-js/compute-engine";
+import { ComputeEngine } from "https://esm.run/@cortex-js/compute-engine";
+
+const ce = new ComputeEngine();
+
 const mf = document.getElementById("mathField");
 const apiUrl = `/api/${problemType}`;
 const directionsElement = document.getElementById("directions");
@@ -5,11 +10,17 @@ const menuExclusions = ["mode", "color", "background-color", "accent", "decorati
 const sumbitButton = document.getElementById("submit");
 const mathProblemElement = document.getElementById("mathProblem");
 const cardHeader = document.getElementById("cardHeader");
-const solution = document.getElementById("solution");
+const solutionElement = document.getElementById("solution");
+const card = document.querySelector(".card");
+
+let solution = "";
 
 let directions = {
     "basic_algebra": "Find the value of x:  ",
-    "combine_like_terms": "Put the expression in it's simplest form: "
+    "combine_like_terms": "Put the expression in it's simplest form: ",
+    "factoring": "Factor the quadratic into it's roots: ",
+    "expanding": "Expand the factored binomial: ",
+    "addition": "Find the sum: "
 }
 
 function fetchProblem() {
@@ -23,12 +34,13 @@ function fetchProblem() {
             return response.json();
         })
         .then(data => {
+            mathProblemElement.innerText = data["problem"];
+            solutionElement.innerText = data["solution"]
+            MathJax.typeset([mathProblemElement, solutionElement]);
+            solution = JSON.stringify(ce.parse(data["solution"].replaceAll("$", "")).json);
+
             window.setTimeout(() => {
-                mathProblemElement.innerText = data["problem"];
-                solution.innerText = data["solution"]
-                MathJax.typeset([mathProblemElement, solution]);
-                console.log(data["solution"])
-                mathProblemElement.classList.remove("placeholder")
+                mathProblemElement.classList.remove("placeholder");
             }, 1000);
         })
         .catch(error => {
@@ -43,16 +55,35 @@ function toTitleCase(string) {
     .join(' '); 
 }
 
+function flashFeedback(correctBool) {
+    if (correctBool) {
+        card.classList.toggle("flashGreen");
+    } else {
+        card.classList.toggle("flashRed");
+    }
+}
+
 sumbitButton.addEventListener("click", (event) => {
+    if (mf.getValue("math-json") == solution) {
+        console.log("Correct!");
+        flashFeedback(true);
+    } else {
+        flashFeedback(false);
+        console.log("Incorrect!");
+    }
     fetchProblem();
-    console.log(mf.getValue());
     mf.setValue("");
 });
 
 window.onload = () => {
     mf.menuItems = mf.menuItems.filter(item => !menuExclusions.includes(item.id));
-    cardHeader.innerText = toTitleCase(problemType.replaceAll("_", " "));
-    document.title = toTitleCase(problemType);
-    directionsElement.innerHTML = directions[problemType] + directionsElement.innerHTML
+    document.title = cardHeader.innerText = toTitleCase(problemType.replaceAll("_", " "));
+    if (directions[problemType]) {
+        directionsElement.innerHTML = directions[problemType] + directionsElement.innerHTML
+    } else {
+        directionsElement.remove();
+        mathProblemElement.parentElement.style.height = "2rem";
+        mathProblemElement.parentElement.querySelector("br").remove();
+    }
     fetchProblem();
 }

@@ -18,7 +18,7 @@ body {
 
 :root {
 
-    /* Base Gruvbox colors */
+    /* Base colors */
     --gruv-bg0: #282828;
     --gruv-bg1: #3c3836;
     --gruv-bg2: #504945;
@@ -26,7 +26,7 @@ body {
     --gruv-fg1: #ebdbb2;
     --gruv-gray: #a89984;
 
-    /* Accent palette */
+    /* Palette */
     --gruv-red: hsl(2, 75%, 46%);
     --gruv-green: hsl(60, 71%, 35%);
     --gruv-yellow: hsl(42, 95%, 58%);
@@ -35,7 +35,7 @@ body {
     --gruv-aqua: hsl(104, 35%, 62%);
     --gruv-orange: hsl(24, 88%, 45%);
 
-    /* Accent palette dark */
+    /* Palette dark */
     --gruv-red-dark: hsl(2, 75%, 36%);
     --gruv-green-dark: hsl(60, 71%, 25%);
     --gruv-yellow-dark: hsl(42, 95%, 48%);
@@ -44,7 +44,7 @@ body {
     --gruv-aqua-dark: hsl(104, 35%, 52%);
     --gruv-orange-dark: hsl(24, 88%, 35%);
 
-    /* Bootstrap semantic mappings */
+    /* Bootstrap */
     --bs-body-bg: var(--gruv-bg0);
     --bs-body-color: var(--gruv-fg1);
 
@@ -121,7 +121,7 @@ math-field {
     display: block;
     outline: none;
     border-color: var(--gruv-bg2);
-    background-color: var(--gruv-bg0);
+    background-color: transparent;
     margin-bottom: 2rem;
     color: var(--gruv-fg0);
     padding: 0;
@@ -147,12 +147,27 @@ math-field::part(menu-toggle) {
     flex-grow: 1;
 }
 
-.card-body a {
+.card-body a, button {
     width: fit-content;
     align-self: flex-end;
 }
 
-.card-body button {
-    width: fit-content;
-    align-self: flex-end;
+@keyframes flashRed {
+   50% {
+    background-color: hsla(2, 75%, 36%, 0.4);
+   } 
+}
+
+@keyframes flashGreen {
+   50% {
+    background-color: hsla(60, 72%, 25%, 0.4);
+   } 
+}
+
+.flashRed {
+    animation: flashRed 0.5s linear; 
+}
+
+.flashGreen {
+    animation: flashGreen 0.5s linear; 
 }
