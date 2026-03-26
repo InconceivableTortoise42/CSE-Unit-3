@@ -1,35 +1,49 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
     <head>
-        <title>Practice {{ type }}</title>
+        <title></title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
          <script>
             MathJax = {
                 tex: {
                     inlineMath: {'[+]': [['$', '$']]}
+                },
+                options: {
+                    enableMenu: false, // Disables the right-click contextual menu
+                    menuOptions: {
+                    settings: {
+                        speech: false, // Disables speech generation
+                        braille: false, // Disables braille generation
+                        enrich: false   // Disables semantic enrichment (which drives interactivity)
+                    }
+                    }
                 }
             };
 
-            let problemType = "{{ type }}".toLowerCase();
+            let problemType = "{{ type }}"
         </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
         <link href="{{ url_for('static', filename='css/index.css') }}", rel="stylesheet">
     </head>
     <body class="d-flex justify-content-center">
        <div class="card" style="width: 40rem; height: fit-content;">
-            <div class="card-header">
-                {{ type }} problem: 
-            </div>
+            <div id="cardHeader" class="card-header"></div>
             <div class="card-body">
-                <p id="directions" class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <math-field id="mathField" virtual-keyboard-mode="auto" smart-fence></math-field> 
-                <button type="button" class="btn btn-primary">Submit</button>
+                <p class="card-text" style="height: 3rem;">
+                    <span id="directions"></span><br>
+                    <span id="mathProblem" >&nbsp;</span>
+                </p>
+                <math-field id="mathField" virtual-keyboard-mode="auto" smart-fence></math-field>
+                <div class="d-flex align-items-center">
+                    <p id="solution" class="card-text" style="display: none;"></p>
+                    <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                </div>
             </div>
         </div> 
-        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-        <script src="{{ url_for('static', filename='js/practice.js' )}}"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/mathlive"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script type="module" src="{{ url_for('static', filename='js/practice.js' )}}"></script>
     </body>
 </html>
