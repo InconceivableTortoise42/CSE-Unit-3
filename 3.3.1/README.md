@@ -1,3 +1,22 @@
+# Project installation
+
+Run uv sync to sync dependencies and download requirements:
+'''
+uv sync
+'''
+
+Activate virtual environment:
+'''
+.venv\Scripts\activate.bat
+'''
+
+Run main.py:
+'''
+python main.py
+'''
+
+To see web interface visit localhost:5000
+
 # Math Practice Web Application
 
 Backend: (Flask + Mathgenerator) <br>
