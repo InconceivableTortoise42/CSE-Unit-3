@@ -208,3 +208,7 @@ math-field::part(menu-toggle) {
 #practiceClose:hover {
     color: var(--gruv-gray-dark);
 }
+
+.count:hover {
+    cursor: default;
+}

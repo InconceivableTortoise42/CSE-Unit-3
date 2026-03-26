@@ -29,8 +29,13 @@
     </head>
     <body class="d-flex justify-content-center">
        <div class="card" style="width: 40rem; height: fit-content;">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div class="card-header d-flex align-items-center justify-content-between position-relative">
             <span id="cardTitle"></span>
+            <div class="position-absolute start-50 top-50 translate-middle d-flex gap-3">
+                <span id="correctCount" class="count" style="color: hsl(60, 71%, 35%);" title="Correct Answers">0</span>
+                <span id="skipCount" class="count" style="color: #a89984;" title="Skipped Answers" >0</span>
+                <span id="incorrectCount" class="count" style="color: hsl(2, 75%, 46%);" title="Incorrect Answers">0</span>
+            </div>
             <a id="practiceClose" href="{{ url_for('index') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                     <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -46,7 +51,7 @@
                 <div class="d-flex align-items-center justify-content-end">
                     <div class="btn-group" role="group" >
                         <button id="solution" type="button" class="btn btn-outline-primary">Reveal Solution</button>
-                        <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                        <button id="submit" type="button" class="btn btn-primary" style="width: 10ch;">Submit</button>
                     </div>
                 </div>
             </div>

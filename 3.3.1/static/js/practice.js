@@ -1,17 +1,24 @@
 import { ComputeEngine } from "https://esm.run/@cortex-js/compute-engine";
 
 const ce = new ComputeEngine();
+const apiUrl = `/api/${problemType}`;
+const menuExclusions = ["mode", "color", "background-color", "accent", "decoration", "variant", "ce-evaluate", "ce-simplify", "ce-solve"];
 
 const mf = document.getElementById("mathField");
-const apiUrl = `/api/${problemType}`;
+const card = document.querySelector(".card");
+const cardTitle = document.getElementById("cardTitle");
+
+const mathProblemElement = document.getElementById("mathProblem");
 const directionsElement = document.getElementById("directions");
-const menuExclusions = ["mode", "color", "background-color", "accent", "decoration", "variant", "ce-evaluate", "ce-simplify", "ce-solve"];
+
 const sumbitButton = document.getElementById("submit");
 const solutionButton = document.getElementById("solution");
-const mathProblemElement = document.getElementById("mathProblem");
-const cardTitle = document.getElementById("cardTitle");
-const card = document.querySelector(".card");
 
+const incorrectCount = document.getElementById("incorrectCount");
+const correctCount = document.getElementById("correctCount");
+const skipCount = document.getElementById("skipCount");
+
+let skip = false;
 let solution = "";
 
 let directions = {
@@ -51,8 +58,10 @@ function flashFeedback(correctBool) {
     let className;
     if (correctBool) {
         className = "correct";
-    } else {
+    } else if (!correctBool){
         className = "incorrect";
+    } else {
+        className = "skip"
     }
     card.classList.add(className);
     setTimeout(() => {
@@ -61,13 +70,21 @@ function flashFeedback(correctBool) {
 }
 
 function submit() {
-     if (mf.value) {
+    if (skip) {
+        skip = false;
+        sumbitButton.innerText = "Submit";
+        mf.setValue("");
+        mf.removeAttribute("inert");
+        fetchProblem();
+        skipCount.innerText = Number(skipCount.innerText) + 1;
+    }
+    if (mf.value) {
         if (mf.getValue("math-json") == solution) {
-            console.log("Correct!");
+            correctCount.innerText = Number(correctCount.innerText) + 1;
             flashFeedback(true);
         } else {
+            incorrectCount.innerText = Number(incorrectCount.innerText) + 1;
             flashFeedback(false);
-            console.log("Incorrect!");
         }
         fetchProblem();
         mf.setValue("");
@@ -82,7 +99,10 @@ sumbitButton.addEventListener("click", (event) => {
 
 solutionButton.addEventListener("click", (event) => {
     mf.value = ce.box(JSON.parse(solution)).latex;
+    mf.setAttribute("inert", "");
     solutionButton.blur();
+    skip = true;
+    sumbitButton.innerText = "Next";
 });
 
 document.addEventListener("keydown", (event) => {
