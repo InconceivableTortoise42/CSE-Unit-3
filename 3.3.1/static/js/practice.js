@@ -7,9 +7,9 @@ const apiUrl = `/api/${problemType}`;
 const directionsElement = document.getElementById("directions");
 const menuExclusions = ["mode", "color", "background-color", "accent", "decoration", "variant", "ce-evaluate", "ce-simplify", "ce-solve"];
 const sumbitButton = document.getElementById("submit");
+const solutionButton = document.getElementById("solution");
 const mathProblemElement = document.getElementById("mathProblem");
-const cardHeader = document.getElementById("cardHeader");
-const solutionElement = document.getElementById("solution");
+const cardTitle = document.getElementById("cardTitle");
 const card = document.querySelector(".card");
 
 let solution = "";
@@ -19,7 +19,7 @@ let directions = {
     "combine_like_terms": "Put the expression in it's simplest form: ",
     "factoring": "Factor the quadratic into it's roots: ",
     "expanding": "Expand the factored binomial: ",
-    "addition": "Find the sum: "
+    "addition": "Find the sum: ",
 }
 
 function fetchProblem() {
@@ -32,8 +32,7 @@ function fetchProblem() {
         })
         .then(data => {
             mathProblemElement.innerText = data["problem"];
-            solutionElement.innerText = data["solution"]
-            MathJax.typeset([mathProblemElement, solutionElement]);
+            MathJax.typeset([mathProblemElement]);
             solution = JSON.stringify(ce.parse(data["solution"].replaceAll("$", "")).json);
         })
         .catch(error => {
@@ -61,21 +60,40 @@ function flashFeedback(correctBool) {
     }, 1000);
 }
 
-sumbitButton.addEventListener("click", (event) => {
-    if (mf.getValue("math-json") == solution) {
-        console.log("Correct!");
-        flashFeedback(true);
-    } else {
-        flashFeedback(false);
-        console.log("Incorrect!");
+function submit() {
+     if (mf.value) {
+        if (mf.getValue("math-json") == solution) {
+            console.log("Correct!");
+            flashFeedback(true);
+        } else {
+            flashFeedback(false);
+            console.log("Incorrect!");
+        }
+        fetchProblem();
+        mf.setValue("");
     }
-    fetchProblem();
-    mf.setValue("");
+}
+
+// Blur on buttons to prevent focus
+sumbitButton.addEventListener("click", (event) => {
+    submit();
+    sumbitButton.blur();
+});
+
+solutionButton.addEventListener("click", (event) => {
+    mf.value = ce.box(JSON.parse(solution)).latex;
+    solutionButton.blur();
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key == "Enter") {
+        submit();
+    }
 });
 
 window.onload = () => {
     mf.menuItems = mf.menuItems.filter(item => !menuExclusions.includes(item.id));
-    document.title = cardHeader.innerText = toTitleCase(problemType.replaceAll("_", " "));
+    document.title = cardTitle.innerText = toTitleCase(problemType.replaceAll("_", " "));
     if (directions[problemType]) {
         directionsElement.innerHTML = directions[problemType] + directionsElement.innerHTML
     } else {

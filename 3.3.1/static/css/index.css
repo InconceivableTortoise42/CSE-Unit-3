@@ -25,6 +25,7 @@ body {
     --gruv-fg0: #fbf1c7;
     --gruv-fg1: #ebdbb2;
     --gruv-gray: #a89984;
+    --gruv-gray-dark: hsl(35, 17%, 49%);
 
     /* Palette */
     --gruv-red: hsl(2, 75%, 46%);
@@ -63,6 +64,25 @@ body {
 .btn-primary {
     --bs-btn-color: var(--gruv-fg0);
     --bs-btn-bg: var(--gruv-blue);
+    --bs-btn-border-color: var(--gruv-blue);
+
+    --bs-btn-hover-color: var(--gruv-fg1);
+    --bs-btn-hover-bg: var(--gruv-blue-dark);
+    --bs-btn-hover-border-color: var(--gruv-blue-dark);
+
+    --bs-btn-focus-shadow-rgb: 254,128,25;
+
+    --bs-btn-active-color: #282828;
+    --bs-btn-active-bg: var(--gruv-blue-dark);
+    --bs-btn-active-border-color: var(--gruv-blue-dark);
+
+    --bs-btn-disabled-color: #a89984;
+    --bs-btn-disabled-bg: #3c3836;
+    --bs-btn-disabled-border-color: #3c3836;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--gruv-fg0);
     --bs-btn-border-color: var(--gruv-blue);
 
     --bs-btn-hover-color: var(--gruv-fg1);
@@ -147,11 +167,10 @@ math-field::part(menu-toggle) {
     flex-grow: 1;
 }
 
-.card-body a, button {
+.card-body a {
     width: fit-content;
     align-self: flex-end;
 }
-
 
 .incorrect {
     animation: shake 0.3s linear, flashRed 1s linear;
@@ -179,4 +198,13 @@ math-field::part(menu-toggle) {
   50% { transform: translateX(5px); }
   75% { transform: translateX(-5px); }
   100% { transform: translateX(0); }
+}
+
+#practiceClose {
+    all: revert;
+    color: var(--gruv-gray);
+}
+
+#practiceClose:hover {
+    color: var(--gruv-gray-dark);
 }

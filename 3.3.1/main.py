@@ -11,7 +11,8 @@ problem_types = {
      "circumference": mathgenerator.geometry.circumference,
      "combine_like_terms": mathgenerator.algebra.combine_like_terms,
      "factoring": mathgenerator.algebra.factoring,
-     "expanding": mathgenerator.algebra.expanding
+     "expanding": mathgenerator.algebra.expanding,
+     "quadratic_equations": mathgenerator.algebra.complex_quadratic
 }
 
 @app.route("/")

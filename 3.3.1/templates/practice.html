@@ -29,16 +29,25 @@
     </head>
     <body class="d-flex justify-content-center">
        <div class="card" style="width: 40rem; height: fit-content;">
-            <div id="cardHeader" class="card-header"></div>
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <span id="cardTitle"></span>
+            <a id="practiceClose" href="{{ url_for('index') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </a>
+        </div>
             <div class="card-body">
                 <p class="card-text" style="height: 3rem;">
                     <span id="directions"></span><br>
                     <span id="mathProblem" >&nbsp;</span>
                 </p>
                 <math-field id="mathField" virtual-keyboard-mode="auto" smart-fence></math-field>
-                <div class="d-flex align-items-center">
-                    <p id="solution" class="card-text" style="display: none;"></p>
-                    <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                <div class="d-flex align-items-center justify-content-end">
+                    <div class="btn-group" role="group" >
+                        <button id="solution" type="button" class="btn btn-outline-primary">Reveal Solution</button>
+                        <button id="submit" type="button" class="btn btn-primary">Submit</button>
+                    </div>
                 </div>
             </div>
         </div> 
