@@ -6,9 +6,10 @@ Run uv sync to sync dependencies and download requirements:
 uv sync
 ```
 
-or alternatively use pip on pregenerated requirements:
+or alternatively use pip on pregenerated requirements after manually creating venv:
 
 ```bash
+python -m venv venv
 pip install -r requirements.txt
 ```
 
