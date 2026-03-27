@@ -17,50 +17,92 @@
         <link href="{{ url_for('static', filename='css/index.css') }}", rel="stylesheet">
     </head>
     <body class="d-flex justify-content-center">
-        <div class="container-xl">
+        <div class="container-xl" style="width: 64rem">
             <h1 id="title" class="text-center">Practice <span id="typing-title"></span></h1>
 
             <div class="row d-flex flex-wrap justify-content-center">
-                <div class="card" style="width: 18rem;">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Basic Algebra</h5>
-                        <p class="card-text">Basic questions to practice solving for x in simple algebraic expressions.</p>
+                        <p class="card-text">Basic questions to practice solving for x in simple algebraic expressions</p>
                         <a href="{{ url_for('practice', type='basic_algebra') }}" class="btn btn-primary">Go</a>
                     </div>
                 </div>
-                <div class="card" style="width: 18rem;">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Addition</h5>
-                        <p class="card-text">Problems requiring you to find the sum of two numbers.</p>
+                        <p class="card-text">Problems requiring you to find the sum of two numbers</p>
                         <a href="{{ url_for('practice', type='addition') }}" class="btn btn-primary">Go</a>
                     </div>
                 </div>
-                <div class="card" style="width: 18rem;">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Definite Integrals</h5>
-                        <p class="card-text">Find the definite integral of a quadratic equation.</p>
+                        <p class="card-text">Find the definite integral of a quadratic equation</p>
                         <a href="{{ url_for('practice', type='definite_integrals') }}" class="btn btn-primary">Go</a>
                     </div>
                 </div>
-                <div class="card" style="width: 18rem;">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Circumference</h5>
-                        <p class="card-text">Find the circumference of a circle given the radius.</p>
+                        <p class="card-text">Find the circumference of a circle given the radius</p>
                         <a href="{{ url_for('practice', type='circumference') }}" class="btn btn-primary">Go</a>
                     </div>
                 </div>
-                <div class="card" style="width: 18rem;">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Combining Like Terms</h5>
-                        <p class="card-text">Take an expression and simplify it by combining like terms.</p>
+                        <p class="card-text">Take an expression and simplify it by combining like terms</p>
                         <a href="{{ url_for('practice', type='combine_like_terms') }}" class="btn btn-primary">Go</a>
                     </div>
                 </div>
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Quadratic Equations</h5>
-                            <p class="card-text">Find the roots of a complex quadratic equation.</p>
-                            <a href="{{ url_for('practice', type='quadratic_equations') }}" class="btn btn-primary">Go</a>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Divide Fractions</h5>
+                        <p class="card-text">Find the quotient of 2 fractions</p>
+                        <a href="{{ url_for('practice', type='divide_fractions') }}" class="btn btn-primary">Go</a>
+                    </div> 
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Factoring</h5>
+                        <p class="card-text">Factoring quadratic equations into 2 binomials</p>
+                        <a href="{{ url_for('practice', type='factoring') }}" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Expanding</h5>
+                        <p class="card-text">Expand factored binomial into standard form.<br>($ax^2+bx+c$)</p>
+                        <a href="{{ url_for('practice', type='expanding') }}" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Equation from 2 points</h5>
+                        <p class="card-text">Find the slope intercept form ($y=mx+b$) equation given 2 points</p>
+                        <a href="{{ url_for('practice', type='equation_from_points') }}" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Systems of Equations</h5>
+                        <p class="card-text">Find x and y in a given system of equations</p>
+                        <a href="{{ url_for('practice', type='systems_of_equations') }}" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Quadratic Equations</h5>
+                        <p class="card-text">Find the zeros of the given quadratic equation</p>
+                        <a href="{{ url_for('practice', type='quadratic_equations') }}" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Percentage</h5>
+                        <p class="card-text">Find the percentage of a given value</p>
+                        <a href="{{ url_for('practice', type='percentage') }}" class="btn btn-primary">Go</a>
                     </div>
                 </div>
             </div>

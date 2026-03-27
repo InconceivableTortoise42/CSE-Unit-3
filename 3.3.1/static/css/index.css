@@ -4,7 +4,7 @@ html, body {
 }
 
 body {
-    padding-top: 10em;
+    padding-top: 8em;
 }
 
 #title {
@@ -14,6 +14,7 @@ body {
 
 .card {
     margin: 1rem;
+    width: 18rem;
 }
 
 :root {
@@ -180,6 +181,10 @@ math-field::part(menu-toggle) {
     animation: flashGreen 1s linear;
 }
 
+.skip {
+    animation: flashGray 1s linear;
+}
+
 @keyframes flashRed {
    50% {
     background-color: hsla(2, 75%, 36%, 0.4);
@@ -189,6 +194,12 @@ math-field::part(menu-toggle) {
 @keyframes flashGreen {
    50% {
     background-color: hsla(60, 72%, 25%, 0.4);
+   } 
+}
+
+@keyframes flashGray {
+   50% {
+    background-color: hsla(34, 17%, 59%, 0.15);
    } 
 }
 

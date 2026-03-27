@@ -4,6 +4,8 @@ const ce = new ComputeEngine();
 const apiUrl = `/api/${problemType}`;
 const menuExclusions = ["mode", "color", "background-color", "accent", "decoration", "variant", "ce-evaluate", "ce-simplify", "ce-solve"];
 
+const pickRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
 const mf = document.getElementById("mathField");
 const card = document.querySelector(".card");
 const cardTitle = document.getElementById("cardTitle");
@@ -18,6 +20,9 @@ const incorrectCount = document.getElementById("incorrectCount");
 const correctCount = document.getElementById("correctCount");
 const skipCount = document.getElementById("skipCount");
 
+const correctSFX = document.querySelectorAll('audio[id^="correct"]');
+const incorrectSFX = document.querySelectorAll('audio[id^="incorrect"]');
+
 let skip = false;
 let solution = "";
 
@@ -27,6 +32,8 @@ let directions = {
     "factoring": "Factor the quadratic into it's roots: ",
     "expanding": "Expand the factored binomial: ",
     "addition": "Find the sum: ",
+    "simplify_square_roots": "Simplify the square root: ",
+    "divide_fractions": "Find the quotient: "
 }
 
 function fetchProblem() {
@@ -54,12 +61,14 @@ function toTitleCase(string) {
     .join(' '); 
 }
 
-function flashFeedback(correctBool) {
+function feedback(correctBool) {
     let className;
-    if (correctBool) {
+    if (correctBool == true) {
         className = "correct";
-    } else if (!correctBool){
+        pickRandomItem(correctSFX).play();
+    } else if (correctBool == false){
         className = "incorrect";
+        pickRandomItem(incorrectSFX).play();
     } else {
         className = "skip"
     }
@@ -75,16 +84,17 @@ function submit() {
         sumbitButton.innerText = "Submit";
         mf.setValue("");
         mf.removeAttribute("inert");
+        feedback();
         fetchProblem();
         skipCount.innerText = Number(skipCount.innerText) + 1;
     }
     if (mf.value) {
         if (mf.getValue("math-json") == solution) {
             correctCount.innerText = Number(correctCount.innerText) + 1;
-            flashFeedback(true);
+            feedback(true);
         } else {
             incorrectCount.innerText = Number(incorrectCount.innerText) + 1;
-            flashFeedback(false);
+            feedback(false);
         }
         fetchProblem();
         mf.setValue("");

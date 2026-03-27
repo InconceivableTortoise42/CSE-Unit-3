@@ -4,6 +4,7 @@
         <title></title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
          <script>
             MathJax = {
                 tex: {
@@ -23,11 +24,21 @@
 
             let problemType = "{{ type }}"
         </script>
+
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
         <link href="{{ url_for('static', filename='css/index.css') }}", rel="stylesheet">
+
+        <audio id="correct_1" src="{{ url_for('static', filename='audio/correctSFX/1.mp3') }}"></audio>
+        <audio id="correct_2" src="{{ url_for('static', filename='audio/correctSFX/2.mp3') }}"></audio>
+        <audio id="correct_3" src="{{ url_for('static', filename='audio/correctSFX/3.mp3') }}"></audio>
+        <audio id="incorrect_1" src="{{ url_for('static', filename='audio/incorrectSFX/1.mp3') }}"></audio>
+        <audio id="incorrect_2" src="{{ url_for('static', filename='audio/incorrectSFX/2.mp3') }}"></audio>
+        <audio id="incorrect_3" src="{{ url_for('static', filename='audio/incorrectSFX/3.mp3') }}"></audio>
+        <audio id="incorrect_4" src="{{ url_for('static', filename='audio/incorrectSFX/4.mp3') }}"></audio>
+
     </head>
-    <body class="d-flex justify-content-center">
+    <body class="d-flex justify-content-center" style="padding: auto;">
        <div class="card" style="width: 40rem; height: fit-content;">
         <div class="card-header d-flex align-items-center justify-content-between position-relative">
             <span id="cardTitle"></span>

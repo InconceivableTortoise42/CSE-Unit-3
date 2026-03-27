@@ -12,7 +12,11 @@ problem_types = {
      "combine_like_terms": mathgenerator.algebra.combine_like_terms,
      "factoring": mathgenerator.algebra.factoring,
      "expanding": mathgenerator.algebra.expanding,
-     "quadratic_equations": mathgenerator.algebra.complex_quadratic
+     "quadratic_equations": mathgenerator.algebra.quadratic_equation,
+     "equation_from_points": mathgenerator.geometry.equation_of_line_from_two_points,
+     "systems_of_equations": mathgenerator.algebra.system_of_equations,
+     "divide_fractions": mathgenerator.basic_math.divide_fractions,
+     "percentage": mathgenerator.basic_math.percentage
 }
 
 @app.route("/")
