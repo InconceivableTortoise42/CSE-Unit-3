@@ -1,23 +1,33 @@
-# Project installation
+# Math Practice Web Application
+## Project installation
 
 Run uv sync to sync dependencies and download requirements:
-'''
+```bash
 uv sync
-'''
+```
+
+or alternatively use pip on pregenerated requirements:
+
+```bash
+pip install -r requirements.txt
+```
 
 Activate virtual environment:
-'''
+```bash
 .venv\Scripts\activate.bat
-'''
+```
 
-Run main.py:
-'''
+
+Run main script:
+```bash
 python main.py
-'''
+```
 
-To see web interface visit localhost:5000
 
-# Math Practice Web Application
+To see web interface visit ```http://localhost:5000```
+
+
+\* The default port can be configured in config.py
 
 Backend: (Flask + Mathgenerator) <br>
 https://github.com/pallets/flask - Web server<br>
