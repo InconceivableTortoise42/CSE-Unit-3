@@ -8,6 +8,16 @@
             MathJax = {
                 tex: {
                     inlineMath: {'[+]': [['$', '$']]}
+                },
+                options: {
+                    enableMenu: false, // Disables the right-click contextual menu
+                    menuOptions: {
+                    settings: {
+                        speech: false, // Disables speech generation
+                        braille: false, // Disables braille generation
+                        enrich: false   // Disables semantic enrichment (which drives interactivity)
+                    }
+                    }
                 }
             };
         </script>
