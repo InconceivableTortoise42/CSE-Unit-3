@@ -33,7 +33,9 @@ let directions = {
     "expanding": "Expand the factored binomial: ",
     "addition": "Find the sum: ",
     "simplify_square_roots": "Simplify the square root: ",
-    "divide_fractions": "Find the quotient: "
+    "divide_fractions": "Find the quotient: ",
+    "differentiation": "Differentiate: ",
+    "integration": "Integrate: "
 }
 
 function fetchProblem() {

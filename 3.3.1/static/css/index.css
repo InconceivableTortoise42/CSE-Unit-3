@@ -223,3 +223,11 @@ math-field::part(menu-toggle) {
 .count:hover {
     cursor: default;
 }
+
+.count {
+    font-size: 1.3rem;
+}
+
+#cardTitle {
+    color: #b16286;
+}
