@@ -116,6 +116,36 @@ class ColorBar(tk.Frame):
             widget.bind("<Leave>", lambda _: self.wrapper.configure(background = "#DFDFDF"))
             widget.bind("<Button-1>", lambda _: self.swapPrimarySecondary())
 
+        # Custom color gradient buttom
+        from PIL import Image, ImageTk
+
+        self.customColor = tk.Canvas(
+            self,
+            width = 36,
+            height = 36,
+            border = 2,
+            relief = "sunken"
+        )
+
+        # Resize with PIL
+        self.gradientButtonImage = Image.open("gradient.png")
+        self.gradientButtonImage = self.gradientButtonImage.resize((36, 36)) 
+        self.gradientButtonImage = ImageTk.PhotoImage(self.gradientButtonImage)
+
+        self.customColor.create_image(0, 0, anchor = "nw", image = self.gradientButtonImage)
+
+        self.customColor.pack(
+            anchor = "w",
+            padx = 10,
+            expand = True,
+            side = "right",
+        )
+
+        self.customColor.bind(
+            "<Button-1>",
+            lambda _: self.setPrimaryColor(colorchooser.askcolor()[1])
+        )
+
         # Presets
 
         self.presets = {
@@ -140,7 +170,7 @@ class ColorBar(tk.Frame):
             relief = "sunken"
         )
 
-        self.presetFrame.pack(anchor = "w", expand = True, side = "right")
+        self.presetFrame.pack(anchor = "w", side = "right")
 
         for x in range(self.presets["columns"]):
             for y in range(self.presets["rows"]):
@@ -160,8 +190,21 @@ class ColorBar(tk.Frame):
                     pady = self.presets["gap"] // 2
                 )
 
-                # Color var frozen for correct binding
-                frame.bind("<Button-1>", lambda _, color = frame["background"]: self.setPrimaryColor(color))
+                # Note: lambda far freezing
+                frame.bind(
+                    "<Button-1>",
+                    lambda _, x = x, y = y:
+                    self.setPrimaryColor(self.presets["colors"][y][x])
+                )
+
+                frame.bind(
+                    "<Shift-Button-1>",
+                    lambda _, frame = frame, x = x, y = y:
+                    (
+                        frame.configure(background = self.primaryColor), # Buttom bg
+                        self.setPresetColor((x, y))
+                    )
+                )
 
     def setPrimaryColor(self, color):
         self.primaryColor = color
@@ -170,6 +213,9 @@ class ColorBar(tk.Frame):
     def setSecondaryColor(self, color):
         self.secondaryColor = color
         self.secondaryColorFrame.configure(bg = color)
+    
+    def setPresetColor(self, location: tuple[int, int]):
+        self.presets["colors"][location[1]][location[0]] = self.primaryColor
 
     def swapPrimarySecondary(self):
         primary = self.primaryColor
@@ -178,8 +224,6 @@ class ColorBar(tk.Frame):
         self.setPrimaryColor(secondary)
         self.setSecondaryColor(primary)
 
-    def customColor(self):
-        color = colorchooser.askcolor()
 
 class ToolBar(tk.Frame):
     def __init__(self, *args, **kwargs):
