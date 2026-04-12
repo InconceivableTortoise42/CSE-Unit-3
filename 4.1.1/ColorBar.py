@@ -8,7 +8,7 @@ class ColorBar(tk.Frame):
 
         self.configure(
             background = "lightgray",
-            height = 64,
+            height = 80,
             relief = "raised",
             border = 2,
         )
@@ -19,8 +19,8 @@ class ColorBar(tk.Frame):
 
         self.wrapper = tk.Frame(
             master = self, 
-            width = 36,
-            height = 36,
+            width = 50,
+            height = 50,
             background = "#DFDFDF",
             relief = "sunken",
             border = 2
@@ -31,8 +31,8 @@ class ColorBar(tk.Frame):
 
         self.primaryColorFrame = tk.Frame(
             master = self.wrapper,
-            width = 15,
-            height = 15,
+            width = 18,
+            height = 18,
             background = self.primaryColor,
             relief = "sunken",
             border = 1
@@ -40,15 +40,15 @@ class ColorBar(tk.Frame):
         
         self.secondaryColorFrame= tk.Frame(
             master = self.wrapper,
-            width = 15,
-            height = 15,
+            width = 18,
+            height = 18,
             background = self.secondaryColor,
             relief = "sunken",
             border = 1
         )
         
-        self.secondaryColorFrame.place(x = 12, y = 12)
-        self.primaryColorFrame.place(x = 5, y = 5)
+        self.secondaryColorFrame.place(relx = 0.6, rely = 0.6, anchor = "center")
+        self.primaryColorFrame.place(relx = 0.4, rely = 0.4, anchor = "center")
         self.primaryColorFrame.lift()
 
         self.wrapper.pack(side = "left", padx = 10)
@@ -62,15 +62,15 @@ class ColorBar(tk.Frame):
         # Custom color gradient buttom
         self.customColor = tk.Canvas(
             self,
-            width = 36,
-            height = 36,
+            width = 48,
+            height = 48,
             border = 2,
             relief = "sunken"
         )
 
         # Resize with PIL
         self.gradientButtonImage = Image.open("assets/gradient.png")
-        self.gradientButtonImage = self.gradientButtonImage.resize((36, 36)) 
+        self.gradientButtonImage = self.gradientButtonImage.resize((48, 48)) 
         self.gradientButtonImage = ImageTk.PhotoImage(self.gradientButtonImage)
 
         self.customColor.create_image(0, 0, anchor = "nw", image = self.gradientButtonImage)
@@ -92,7 +92,7 @@ class ColorBar(tk.Frame):
         self.presets = {
             "columns": 10 ,
             "rows": 2,
-            "size": 16,
+            "size": 24,
             "gap": 4,
             "colors": [
                 ["red", "orange", "yellow", "green", "blue", "purple", "pink", "brown", "black", "gray"],

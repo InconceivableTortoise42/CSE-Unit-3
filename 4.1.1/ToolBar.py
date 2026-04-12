@@ -59,7 +59,6 @@ class ToolBar(tk.Frame):
                     name = self.toolNames[i]
                 )
 
-                
                 self.toolIcons.append(
                     ImageTk.PhotoImage(
                         self.toolIconSheet.crop((
@@ -81,15 +80,32 @@ class ToolBar(tk.Frame):
                     row = y
                 )
 
+                # Bind click to label and not frame
+                for widget in frame.winfo_children():
+                    widget.bind("<Button-1>", lambda _, name = frame.winfo_name(): self.setTool(name))
+
                 i -=- 1 # Lol
             
 
         self.wrapper.pack(anchor = "n", expand = True, pady = 5)
 
         # Set relief of current tool initially
+        self.setTool("pencil")
+
+    def setTool(self, toolName: str):
+
+        # Reset style of current
         self.wrapper.nametowidget(
             self.currentTool
         ).configure(
-            relief = "sunken"
+            relief = "raised"
         )
 
+        # Set new tool and style 
+        self.currentTool = toolName
+
+        self.wrapper.nametowidget(
+            toolName
+        ).configure(
+            relief = "sunken"
+        )
