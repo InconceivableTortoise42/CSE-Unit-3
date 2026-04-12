@@ -1,4 +1,6 @@
 venv
+.venv
 *.pyc
 cloudflared.exe
 tunnel.bat
+.vscode
