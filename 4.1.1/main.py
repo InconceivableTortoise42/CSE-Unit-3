@@ -7,7 +7,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Paint - Multiplayer") 
-        self.icon = tk.PhotoImage(file ='icon.png')
+        self.icon = tk.PhotoImage(file ='assets/icon.png')
         self.iconphoto(False, self.icon)
 
         self.resizable = True

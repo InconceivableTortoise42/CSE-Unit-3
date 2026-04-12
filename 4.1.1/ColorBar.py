@@ -69,7 +69,7 @@ class ColorBar(tk.Frame):
         )
 
         # Resize with PIL
-        self.gradientButtonImage = Image.open("gradient.png")
+        self.gradientButtonImage = Image.open("assets/gradient.png")
         self.gradientButtonImage = self.gradientButtonImage.resize((36, 36)) 
         self.gradientButtonImage = ImageTk.PhotoImage(self.gradientButtonImage)
 

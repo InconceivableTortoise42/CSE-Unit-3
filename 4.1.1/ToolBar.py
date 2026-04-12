@@ -19,7 +19,7 @@ class ToolBar(tk.Frame):
         # 16 x 16 icons in a row scales to self.toolIconSize
         self.toolIconSize = 24
         self.toolCount = 16
-        self.toolIconSheet = Image.open("tools.png").resize((
+        self.toolIconSheet = Image.open("assets/tools.png").resize((
                                         self.toolIconSize * self.toolCount,
                                         self.toolIconSize
                                         ))
