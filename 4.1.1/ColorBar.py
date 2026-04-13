@@ -65,7 +65,8 @@ class ColorBar(tk.Frame):
             width = 48,
             height = 48,
             border = 2,
-            relief = "sunken"
+            relief = "sunken",
+            background = "lightgray"
         )
 
         # Resize with PIL
@@ -108,7 +109,8 @@ class ColorBar(tk.Frame):
             master = self,
             width = self.presets["columns"] * (self.presets["size"] + self.presets["gap"]),
             height = self.presets["rows"] * (self.presets["size"] + self.presets["gap"]),
-            relief = "sunken"
+            relief = "sunken",
+            background = "lightgray"
         )
 
         self.presetFrame.pack(anchor = "w", side = "right")
