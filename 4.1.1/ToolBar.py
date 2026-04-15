@@ -109,3 +109,6 @@ class ToolBar(tk.Frame):
         ).configure(
             relief = "sunken"
         )
+
+    def getTool(self) -> str:
+        return self.currentTool

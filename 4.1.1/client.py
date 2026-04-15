@@ -1,7 +1,8 @@
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk 
 from ColorBar import ColorBar
 from ToolBar import ToolBar
 import tkinter as tk
+import numpy as np
 
 class App(tk.Tk):
     def __init__(self):
@@ -13,17 +14,17 @@ class App(tk.Tk):
         self.resizable = True
         self.geometry("800x600")
 
-        self.mainMenu= MainMenu(self)
+        # self.mainMenu= MainMenu(self)
 
-        self.mainMenu.pack(expand = True, fill = "both")
+        # self.mainMenu.pack(expand = True, fill = "both")
 
-        # self.configure(menu = MenuBar())
+        self.configure(menu = MenuBar())
 
-        # self.paintScreen = Paint(self)
+        self.paintScreen = Paint(self)
 
-        # self.paintScreen.pack(expand = True, fill = "both")
+        self.paintScreen.pack(expand = True, fill = "both")
 
-        # self.bind("x", lambda _: self.paintScreen.colorBar.swapPrimarySecondary())
+        self.bind("x", lambda _: self.paintScreen.colorBar.swapPrimarySecondary())
 
         self.mainloop()
 
@@ -101,6 +102,15 @@ class Paint(tk.Frame):
 
         self.configure(background = "gray")
 
+        self.width = 600
+        self.height = 600
+
+        self.undoStack = []
+        self.redoStack = []
+
+        self.lastPos = None
+
+        self.mousedown: bool = False
 
         self.colorBar = ColorBar(self)
         self.colorBar.pack(side = "bottom", fill = "x")
@@ -108,8 +118,26 @@ class Paint(tk.Frame):
         self.toolBar = ToolBar(self)
         self.toolBar.pack(side = "left", fill = "y")
 
-        self.canvas = tk.Canvas(self)
+        self.canvas = tk.Canvas(self, width = self.width, height = self.height)
         self.canvas.pack(expand = True, anchor = "nw")
+
+        self.canvas.bind("<B1-Motion>", self.mouseDrag)
+        self.canvas.bind("<ButtonRelease-1>", self.mouseUp)
+        self.canvas.bind("<ButtonPress-1>", self.mouseDown)
+
+    def mouseDrag(self, event):
+        if self.lastPos == None:
+            self.lastPos = (event.x, event.y)
+        
+        self.canvas.create_line((self.lastPos[0], self.lastPos[1], event.x, event.y), activewidth = 2, fill = self.colorBar.getColor())
+
+        self.lastPos = (event.x, event.y)
+
+    def mouseUp(self, event):
+        pass
+
+    def mouseDown(self, event):
+        self.lastPos = (event.x, event.y)
 
 
 if __name__ == "__main__":

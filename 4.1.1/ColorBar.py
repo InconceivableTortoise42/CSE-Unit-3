@@ -166,3 +166,6 @@ class ColorBar(tk.Frame):
 
         self.setPrimaryColor(secondary)
         self.setSecondaryColor(primary)
+
+    def getColor(self):
+        return self.primaryColor
