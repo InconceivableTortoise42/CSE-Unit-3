@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from PIL import Image, ImageTk
-from tools import Tool
 import tkinter as tk
+from tools import *
 
 class ToolBar(tk.Frame):
     def __init__(self, master, on_tool_change: Callable[[Tool], None],*args, **kwargs):
@@ -35,10 +35,10 @@ class ToolBar(tk.Frame):
             "freeform-selection": Tool(),
             "rectangular-selection": Tool(),
             "eraser": Tool(),
-            "paint-bucket": Tool(),
+            "paint-bucket": Bucket(),
             "eye-dropper": Tool(),
             "zoom": Tool(),
-            "pencil": Tool(),
+            "pencil": Pencil(),
             "brush": Tool(),
             "spray-can": Tool(),
             "type": Tool(),

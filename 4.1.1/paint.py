@@ -1,9 +1,13 @@
+from __future__ import annotations  
+from typing import TYPE_CHECKING
 from PIL import Image, ImageTk 
 from colorbar import ColorBar
 from toolbar import ToolBar
-from tools import Tool
 import tkinter as tk
 import numpy as np
+
+if TYPE_CHECKING:
+    from tools import Tool
 
 class Paint(tk.Frame):
     def __init__(self, *args, **kwargs):
@@ -46,7 +50,7 @@ class Paint(tk.Frame):
         self.canvas.bind("<B1-Motion>", self.mouseDrag)
         self.canvas.bind("<ButtonRelease-1>", self.mouseUp)
         self.canvas.bind("<ButtonPress-1>", self.mouseDown)
-        self.canvas.bind("<Button-3>", lambda _: self.strokeCancel())
+        # self.canvas.bind("<Button-3>", lambda _: self.strokeCancel())
 
 
     def setTool(self, tool: Tool):
@@ -56,36 +60,17 @@ class Paint(tk.Frame):
         self.currentColor = color
 
     def mouseDrag(self, event):
-        num_steps = max(np.abs(np.array(self.lastPos) - (event.x, event.y))) + 1
-        points = np.round(np.linspace(self.lastPos, (event.x, event.y), num_steps)).astype(int)
-
-        self.lastPos = np.array([event.x, event.y])
-
-        for point in points:
-            self.brush3x3(point[0], point[1])
-            self.currentStroke.append((int(point[0]), int(point[1])))
-
+        self.currentTool.on_mouse_drag(self, event)
         self.render()        
 
     def mouseUp(self, event):
-        self.currentStroke.append((event.x, event.y))
-        self.currentStroke = []
+        self.currentTool.on_mouse_up(self, event)
+        self.render()        
 
     def mouseDown(self, event):
+        self.currentTool.on_mouse_down(self, event)
         self.lastPos = (event.x, event.y)
-
-    def strokeCancel(self):
-        # Canceling stroke
-        if self.currentStroke:
-            for point in self.currentStroke:
-                self.brush3x3(point[0], point[1], (255, 255, 255))
-
-        self.currentStroke = []
-        self.render()
-
-    def brush3x3(self, x, y, color = None):
-        if 0 <= x < self.width and 0 <= y < self.height:
-            self.buffer[y - 1 : y + 2, x - 1 : x + 2] = color if color else self.currentColor
+        self.render()        
 
     def render(self):
         # NumPy -> PIL -> PhotoImage
@@ -96,3 +81,17 @@ class Paint(tk.Frame):
 
         self.canvas.itemconfig(self.image, image = self.imageTK)
 
+    def onCanvas(self, x, y) -> bool:
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return True
+        else:
+            return False
+    
+    # def strokeCancel(self):
+    #     # Canceling stroke
+    #     if self.currentStroke:
+    #         for point in self.currentStroke:
+    #             self.brush3x3(point[0], point[1], (255, 255, 255))
+
+    #     self.currentStroke = []
+    #     self.render()
