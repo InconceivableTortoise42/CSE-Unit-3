@@ -1,10 +1,13 @@
+from collections.abc import Callable
 from tkinter import colorchooser
 from PIL import Image, ImageTk
 import tkinter as tk
 
 class ColorBar(tk.Frame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, master, on_color_change: Callable[[tuple], None], *args, **kwargs):
+        super().__init__(master = master, *args, **kwargs)
+
+        self.callback = on_color_change
 
         self.configure(
             background = "lightgray",
@@ -152,6 +155,7 @@ class ColorBar(tk.Frame):
     def setPrimaryColor(self, color):
         self.primaryColor = color
         self.primaryColorFrame.configure(bg = color)
+        self.callback(self.getColor())
 
     def setSecondaryColor(self, color):
         self.secondaryColor = color
@@ -168,4 +172,5 @@ class ColorBar(tk.Frame):
         self.setSecondaryColor(primary)
 
     def getColor(self):
-        return self.primaryColor
+        # Raw RGB 0..65535 to 0..255
+        return tuple((color // 256 for color in self.master.winfo_rgb(self.primaryColor)))

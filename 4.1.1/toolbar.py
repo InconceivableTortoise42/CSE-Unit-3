@@ -1,9 +1,11 @@
+from collections.abc import Callable
 from PIL import Image, ImageTk
+from tools import Tool
 import tkinter as tk
 
 class ToolBar(tk.Frame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, master, on_tool_change: Callable[[Tool], None],*args, **kwargs):
+        super().__init__(master = master, *args, **kwargs)
 
         self.configure(
             background = "lightgray",
@@ -13,6 +15,8 @@ class ToolBar(tk.Frame):
         )
 
         self.pack_propagate(False)
+
+        self.callback = on_tool_change
 
         self.currentTool = "pencil"
 
@@ -27,24 +31,24 @@ class ToolBar(tk.Frame):
         self.toolIcons = [] # Made so that images aren't garbage collected
 
         # Names in order of image
-        self.toolNames = [
-            "freeform-selection",
-            "rectangular-selection",
-            "eraser",
-            "paint-bucket",
-            "eye-dropper",
-            "zoom",
-            "pencil",
-            "brush",
-            "spray-can",
-            "type",
-            "line",
-            "curve",
-            "rectangle-shape",
-            "custom-shape",
-            "circle-shape",
-            "beveled-rectangle-shape"
-        ]
+        self.tools = {
+            "freeform-selection": Tool(),
+            "rectangular-selection": Tool(),
+            "eraser": Tool(),
+            "paint-bucket": Tool(),
+            "eye-dropper": Tool(),
+            "zoom": Tool(),
+            "pencil": Tool(),
+            "brush": Tool(),
+            "spray-can": Tool(),
+            "type": Tool(),
+            "line": Tool(),
+            "curve": Tool(),
+            "rectangle-shape": Tool(),
+            "custom-shape": Tool(),
+            "circle-shape": Tool(),
+            "beveled-rectangle-shape": Tool()
+        }
 
         self.wrapper = tk.Frame(self)
 
@@ -56,7 +60,7 @@ class ToolBar(tk.Frame):
                     master = self.wrapper,
                     relief = "raised",
                     border = 2,
-                    name = self.toolNames[i]
+                    name = list(self.tools)[i]
                 )
 
                 self.toolIcons.append(
@@ -82,7 +86,7 @@ class ToolBar(tk.Frame):
 
                 # Bind click to label and not frame
                 for widget in frame.winfo_children():
-                    widget.bind("<Button-1>", lambda _, name = frame.winfo_name(): self.setTool(name))
+                    widget.bind("<Button-1>", lambda _, name = list(self.tools)[i]: self.setTool(name))
 
                 i -=- 1 # Lol
             
@@ -110,5 +114,8 @@ class ToolBar(tk.Frame):
             relief = "sunken"
         )
 
-    def getTool(self) -> str:
-        return self.currentTool
+        # Paint callback
+        self.callback(self.tools[self.currentTool])
+
+    def getTool(self) -> Tool:
+        return self.tools[self.currentTool]
