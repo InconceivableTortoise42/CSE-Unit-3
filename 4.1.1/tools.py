@@ -100,6 +100,9 @@ class Eyedropper(Tool):
         )))
 
 class Rectangle(Tool):
+    def __init__(self):
+        self.visual = 0
+
     def on_mouse_down(self, app: Paint, event):
         self.app = app
         self.start = (event.x, event.y)
@@ -119,10 +122,13 @@ class Rectangle(Tool):
         self.app.buffer[y1 : y2 + 1, x1 : x2 + 1] = self.app.currentColor
     
     def create_visual(self):
+        if self.visual:
+            self.app.canvas.delete(self.visual)
+
         self.visual = self.app.canvas.create_rectangle(
-            self.start[0],
-            self.start[1],
-            self.stop[0],
-            self.stop[1],
+            self.start[0] * self.app.pixel_size,
+            self.start[1] * self.app.pixel_size,
+            self.stop[0] * self.app.pixel_size,
+            self.stop[1] * self.app.pixel_size,
             fill = '#{:02x}{:02x}{:02x}'.format(*self.app.currentColor) # RGB 2 HEX
         )   
