@@ -9,7 +9,7 @@ class ToolBar(tk.Frame):
 
         self.configure(
             background = "lightgray",
-            width = 80,
+            width = 64,
             relief = "raised",
             border = 2
         )
@@ -21,12 +21,12 @@ class ToolBar(tk.Frame):
         self.currentTool = "pencil"
 
         # 16 x 16 icons in a row scales to self.toolIconSize
-        self.toolIconSize = 24
+        self.toolIconSize = 16 
         self.toolCount = 16
         self.toolIconSheet = Image.open("assets/tools.png").resize((
                                         self.toolIconSize * self.toolCount,
-                                        self.toolIconSize
-                                        ))
+                                        self.toolIconSize), 
+                                        Image.NEAREST) # type: ignore
 
         self.toolIcons = [] # Made so that images aren't garbage collected
 
@@ -34,9 +34,9 @@ class ToolBar(tk.Frame):
         self.tools = {
             "freeform-selection": Tool(),
             "rectangular-selection": Tool(),
-            "eraser": Tool(),
+            "eraser": Eraser(),
             "paint-bucket": Bucket(),
-            "eye-dropper": Tool(),
+            "eye-dropper": Eyedropper(),
             "zoom": Tool(),
             "pencil": Pencil(),
             "brush": Tool(),

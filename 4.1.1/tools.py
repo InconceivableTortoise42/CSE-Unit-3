@@ -8,6 +8,9 @@ if TYPE_CHECKING:
     from paint import Paint
 
 class Tool:
+    def on_mouse_move(self, app: Paint, event):
+        pass
+
     def on_mouse_down(self, app: Paint, event):
         pass
 
@@ -18,11 +21,8 @@ class Tool:
         pass
 
 class Pencil(Tool):
-    def __init__(self) -> None:
-        pass
-
     def on_mouse_down(self, app: Paint, event):
-        pass
+        self.draw(app, event.x, event.y, app.currentColor)
 
     def on_mouse_drag(self, app: Paint, event):
         num_steps = max(np.abs(np.array(app.lastPos) - (event.x, event.y))) + 1
@@ -37,15 +37,12 @@ class Pencil(Tool):
     def on_mouse_up(self, app: Paint, event):
         app.currentStroke.append((event.x, event.y))
         app.currentStroke = []
-
+        
     def draw(self, app: Paint, x, y, color):
         if app.onCanvas(x, y):
-            app.buffer[y - 1 : y + 2, x - 1 : x + 2] = color 
+            app.buffer[y, x] = color 
 
 class Bucket(Tool):
-    def __init__(self) -> None:
-        pass
-
     def on_mouse_down(self, app: Paint, event):
         targetColor = tuple(app.buffer[event.y, event.x])
         newColor = app.currentColor
@@ -72,9 +69,60 @@ class Bucket(Tool):
             queue.append((x, y + 1))
             queue.append((x, y - 1))
 
+class Eraser(Tool):
+    def on_mouse_down(self, app: Paint, event):
+        self.erace(app, event.x, event.y)
 
-    def on_mouse_drag(self, app, event):
-        pass
+    def on_mouse_drag(self, app: Paint, event):
+        num_steps = max(np.abs(np.array(app.lastPos) - (event.x, event.y))) + 1
+        points = np.round(np.linspace(app.lastPos, (event.x, event.y), num_steps)).astype(int)
 
-    def on_mouse_up(self, app, event):
-        pass
+        app.lastPos = (event.x, event.y)
+
+        for point in points:
+            self.erace(app, point[0], point[1])
+            app.currentStroke.append((int(point[0]), int(point[1])))
+
+    def on_mouse_up(self, app: Paint, event):
+        app.currentStroke.append((event.x, event.y))
+        app.currentStroke = []
+        
+    def erace(self, app: Paint, x, y):
+        if app.onCanvas(x, y):
+            app.buffer[y, x] = (255, 255, 255)
+
+
+class Eyedropper(Tool):
+    def on_mouse_down(self, app: Paint, event):
+        app.colorBar.setPrimaryColor(
+            '#{:02x}{:02x}{:02x}'.format(
+            tuple(app.buffer[event.y, event.x]
+        )))
+
+class Rectangle(Tool):
+    def on_mouse_down(self, app: Paint, event):
+        self.app = app
+        self.start = (event.x, event.y)
+
+    def on_mouse_drag(self, app: Paint, event):
+        self.stop = (event.x, event.y)
+        self.create_visual()
+
+    def on_mouse_up(self, app: Paint, event):
+        self.stop = (event.x, event.y)
+        self.rect(self.start, self.stop)
+
+    def rect(self, start, stop, fill = False):
+        x1, x2 = sorted([start[0], stop[0]])
+        y1, y2 = sorted([start[1], stop[1]])
+
+        self.app.buffer[y1 : y2 + 1, x1 : x2 + 1] = self.app.currentColor
+    
+    def create_visual(self):
+        self.visual = self.app.canvas.create_rectangle(
+            self.start[0],
+            self.start[1],
+            self.stop[0],
+            self.stop[1],
+            fill = '#{:02x}{:02x}{:02x}'.format(*self.app.currentColor) # RGB 2 HEX
+        )   

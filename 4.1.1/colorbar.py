@@ -11,7 +11,7 @@ class ColorBar(tk.Frame):
 
         self.configure(
             background = "lightgray",
-            height = 80,
+            height = 64,
             relief = "raised",
             border = 2,
         )
@@ -22,8 +22,8 @@ class ColorBar(tk.Frame):
 
         self.wrapper = tk.Frame(
             master = self, 
-            width = 50,
-            height = 50,
+            width = 36,
+            height = 36,
             background = "#DFDFDF",
             relief = "sunken",
             border = 2
@@ -34,8 +34,8 @@ class ColorBar(tk.Frame):
 
         self.primaryColorFrame = tk.Frame(
             master = self.wrapper,
-            width = 18,
-            height = 18,
+            width = 12,
+            height = 12,
             background = self.primaryColor,
             relief = "sunken",
             border = 1
@@ -43,8 +43,8 @@ class ColorBar(tk.Frame):
         
         self.secondaryColorFrame= tk.Frame(
             master = self.wrapper,
-            width = 18,
-            height = 18,
+            width = 12,
+            height = 12,
             background = self.secondaryColor,
             relief = "sunken",
             border = 1
@@ -65,11 +65,10 @@ class ColorBar(tk.Frame):
         # Custom color gradient buttom
         self.customColor = tk.Canvas(
             self,
-            width = 48,
-            height = 48,
+            width = 32,
+            height = 32,
             border = 2,
             relief = "sunken",
-            background = "lightgray"
         )
 
         # Resize with PIL
@@ -96,11 +95,11 @@ class ColorBar(tk.Frame):
         self.presets = {
             "columns": 10 ,
             "rows": 2,
-            "size": 24,
+            "size": 16,
             "gap": 4,
             "colors": [
                 ["red", "orange", "yellow", "green", "blue", "purple", "pink", "brown", "black", "gray"],
-                ["darkred", "darkorange", "gold", "darkgreen", "darkblue", "purple2", "deeppink2"]
+                ["darkred", "darkorange", "gold", "darkgreen", "darkblue", "purple2", "deeppink2", "white", "white", "white"]
             ]
         }
 

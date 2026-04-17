@@ -2,6 +2,12 @@ from PIL import Image, ImageTk
 from paint import Paint
 import tkinter as tk
 
+try:
+    import ctypes
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+except:
+    pass
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -31,7 +37,7 @@ class MenuBar(tk.Menu):
         super().__init__()
 
         self.configure(
-            background = "lightgray",
+            background = "darkgray",
             relief = "raised",
             border = 2
         )
