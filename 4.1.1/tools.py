@@ -115,6 +115,9 @@ class Rectangle(Tool):
         self.stop = (event.x, event.y)
         self.rect(self.start, self.stop)
 
+        if self.visual:
+            self.app.canvas.delete(self.visual)
+
     def rect(self, start, stop, fill = False):
         x1, x2 = sorted([start[0], stop[0]])
         y1, y2 = sorted([start[1], stop[1]])
@@ -125,10 +128,14 @@ class Rectangle(Tool):
         if self.visual:
             self.app.canvas.delete(self.visual)
 
+        x1, x2 = sorted([self.start[0], self.stop[0]])
+        y1, y2 = sorted([self.start[1], self.stop[1]])
+
         self.visual = self.app.canvas.create_rectangle(
-            self.start[0] * self.app.pixel_size,
-            self.start[1] * self.app.pixel_size,
-            self.stop[0] * self.app.pixel_size,
-            self.stop[1] * self.app.pixel_size,
-            fill = '#{:02x}{:02x}{:02x}'.format(*self.app.currentColor) # RGB 2 HEX
+            x1 * self.app.pixel_size,
+            y1 * self.app.pixel_size,
+            (x2 + 1) * self.app.pixel_size,
+            (y2 + 1) * self.app.pixel_size,
+            fill = '#{:02x}{:02x}{:02x}'.format(*self.app.currentColor), # RGB 2 HEX
+            outline = ""
         )   
