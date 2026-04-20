@@ -2,12 +2,6 @@ from PIL import Image, ImageTk
 from paint import Paint
 import tkinter as tk
 
-try:
-    import ctypes
-    ctypes.windll.shcore.SetProcessDpiAwareness(1)
-except:
-    pass
-
 class App(tk.Tk):
     def __init__(self):
         super().__init__()

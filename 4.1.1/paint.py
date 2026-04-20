@@ -60,6 +60,7 @@ class Paint(tk.Frame):
         self.canvas.bind("<ButtonRelease-1>", self.mouseUp)
         self.canvas.bind("<ButtonPress-1>", self.mouseDown)
         self.canvas.bind("<Motion>", self.mouseMove)
+        self.master.bind("<Return>", lambda _: self.keyEnter())
         # self.canvas.bind("<Button-3>", lambda _: self.strokeCancel())
 
 
@@ -92,6 +93,20 @@ class Paint(tk.Frame):
         event.x = int(event.x / self.pixel_size)
         event.y = int(event.y / self.pixel_size)
         self.currentTool.on_mouse_move(self, event)
+
+    def keyEnter(self):
+        self.currentTool.on_enter(self)
+
+    def rect(self, start, stop, fill = False):
+        x1, x2 = sorted([start[0], stop[0]])
+        y1, y2 = sorted([start[1], stop[1]])
+
+        self.buffer[y1 : y2 + 1, x1 : x2 + 1] = self.currentColor
+
+    def line(self, start, stop):
+        steps = max(np.abs(np.array(start) - stop)) + 1
+        points = np.round(np.linspace(start, stop, steps)).astype(int)
+        self.buffer[points[:, 1], points[:, 0]] = self.currentColor
 
     def render(self):
         # NumPy -> PIL -> PhotoImage

@@ -20,19 +20,17 @@ class Tool:
     def on_mouse_up(self, app: Paint, event):
         pass
 
+    def on_enter(self, app: Paint):
+        pass
+
 class Pencil(Tool):
     def on_mouse_down(self, app: Paint, event):
         self.draw(app, event.x, event.y, app.currentColor)
 
     def on_mouse_drag(self, app: Paint, event):
-        num_steps = max(np.abs(np.array(app.lastPos) - (event.x, event.y))) + 1
-        points = np.round(np.linspace(app.lastPos, (event.x, event.y), num_steps)).astype(int)
-
+        app.line(app.lastPos, (event.x, event.y))
         app.lastPos = (event.x, event.y)
 
-        for point in points:
-            self.draw(app, point[0], point[1], app.currentColor)
-            app.currentStroke.append((int(point[0]), int(point[1])))
 
     def on_mouse_up(self, app: Paint, event):
         app.currentStroke.append((event.x, event.y))
@@ -95,7 +93,7 @@ class Eraser(Tool):
 class Eyedropper(Tool):
     def on_mouse_down(self, app: Paint, event):
         app.colorBar.setPrimaryColor(
-            '#{:02x}{:02x}{:02x}'.format(
+            '#{:02x}{:02x}{:02x}'.format(*
             tuple(app.buffer[event.y, event.x]
         )))
 
@@ -104,38 +102,87 @@ class Rectangle(Tool):
         self.visual = 0
 
     def on_mouse_down(self, app: Paint, event):
-        self.app = app
         self.start = (event.x, event.y)
 
     def on_mouse_drag(self, app: Paint, event):
         self.stop = (event.x, event.y)
-        self.create_visual()
+        self.create_visual(app)
 
     def on_mouse_up(self, app: Paint, event):
         self.stop = (event.x, event.y)
-        self.rect(self.start, self.stop)
+        app.rect(self.start, self.stop)
 
         if self.visual:
-            self.app.canvas.delete(self.visual)
+            app.canvas.delete(self.visual)
 
-    def rect(self, start, stop, fill = False):
-        x1, x2 = sorted([start[0], stop[0]])
-        y1, y2 = sorted([start[1], stop[1]])
-
-        self.app.buffer[y1 : y2 + 1, x1 : x2 + 1] = self.app.currentColor
-    
-    def create_visual(self):
+    def create_visual(self, app: Paint):
         if self.visual:
-            self.app.canvas.delete(self.visual)
+            app.canvas.delete(self.visual)
 
         x1, x2 = sorted([self.start[0], self.stop[0]])
         y1, y2 = sorted([self.start[1], self.stop[1]])
 
-        self.visual = self.app.canvas.create_rectangle(
-            x1 * self.app.pixel_size,
-            y1 * self.app.pixel_size,
-            (x2 + 1) * self.app.pixel_size,
-            (y2 + 1) * self.app.pixel_size,
-            fill = '#{:02x}{:02x}{:02x}'.format(*self.app.currentColor), # RGB 2 HEX
+        self.visual = app.canvas.create_rectangle(
+            x1 * app.pixel_size,
+            y1 * app.pixel_size,
+            (x2 + 1) * app.pixel_size,
+            (y2 + 1) * app.pixel_size,
+            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor), # RGB 2 HEX
             outline = ""
         )   
+
+class Line(Tool):
+    def __init__(self) -> None:
+        self.visual = 0
+
+    def on_mouse_down(self, app: Paint, event):
+        self.last = (event.x, event.y)
+
+    def on_mouse_up(self, app: Paint, event):
+        app.line(self.last, (event.x, event.y))
+        app.canvas.delete(self.visual)
+
+    def on_mouse_drag(self, app: Paint, event):
+        if self.visual:
+            app.canvas.delete(self.visual)
+
+        self.visual = app.canvas.create_line(
+            self.last[0] * app.pixel_size,
+            self.last[1] * app.pixel_size,
+            event.x * app.pixel_size,
+            event.y * app.pixel_size,
+            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor) # RGB 2 HEX
+        )
+
+class CustomShape(Tool):
+    def __init__(self):
+        self.points = []
+        self.visual = 0
+
+    def on_mouse_up(self, app: Paint, event):
+        if self.points:
+            app.line(self.points[-1], (event.x, event.y))
+        self.points.append((event.x, event.y))
+        app.render()
+    
+    def on_mouse_move(self, app: Paint, event):
+        if self.points:
+            self.create_visual(app, (event.x, event.y))
+
+    def on_enter(self, app: Paint):
+        app.line(self.points[-1], self.points[0])
+        self.points = []
+        app.canvas.delete(self.visual)
+        app.render()
+    
+    def create_visual(self, app: Paint, mousePos):
+        if self.visual:
+            app.canvas.delete(self.visual)
+
+        self.visual = app.canvas.create_line(
+            self.points[-1][0] * app.pixel_size,
+            self.points[-1][1] * app.pixel_size,
+            mousePos[0] * app.pixel_size,
+            mousePos[1] * app.pixel_size,
+            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor) # RGB 2 HEX
+        )

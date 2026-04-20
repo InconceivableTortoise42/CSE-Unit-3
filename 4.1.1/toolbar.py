@@ -42,10 +42,10 @@ class ToolBar(tk.Frame):
             "brush": Tool(),
             "spray-can": Tool(),
             "type": Tool(),
-            "line": Tool(),
+            "line": Line(),
             "curve": Tool(),
             "rectangle-shape": Rectangle(),
-            "custom-shape": Tool(),
+            "custom-shape": CustomShape(),
             "circle-shape": Tool(),
             "beveled-rectangle-shape": Tool()
         }
