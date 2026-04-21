@@ -46,7 +46,7 @@ class ToolBar(tk.Frame):
             "curve": Tool(),
             "rectangle-shape": Rectangle(),
             "custom-shape": CustomShape(),
-            "circle-shape": Tool(),
+            "circle-shape": Ellipse(),
             "beveled-rectangle-shape": Tool()
         }
 

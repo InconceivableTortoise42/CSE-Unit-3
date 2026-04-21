@@ -49,6 +49,8 @@ class Paint(tk.Frame):
         self.canvas.pack(expand = True, anchor = "nw")
 
         self.buffer = np.full((int(self.height / self.pixel_size), int(self.width / self.pixel_size), 3), 255, dtype = np.uint8)
+        self.tempBuffer = np.zeros((int(self.height / self.pixel_size), int(self.width / self.pixel_size), 3), dtype = np.uint8)
+        self.tempMask = np.zeros((int(self.height / self.pixel_size), int(self.width / self.pixel_size)), dtype = bool)
 
         self.image = self.canvas.create_image(0, 0, anchor = "nw")
 
@@ -97,25 +99,71 @@ class Paint(tk.Frame):
     def keyEnter(self):
         self.currentTool.on_enter(self)
 
-    def rect(self, start, stop, fill = False):
+    def rect(self, start, stop, fill = False, temp = False):
+        if temp:
+            buffer = self.tempBuffer
+        else:
+            buffer = self.buffer
+
         x1, x2 = sorted([start[0], stop[0]])
         y1, y2 = sorted([start[1], stop[1]])
 
-        self.buffer[y1 : y2 + 1, x1 : x2 + 1] = self.currentColor
+        buffer[y1 : y2 + 1, x1 : x2 + 1] = self.currentColor
 
-    def line(self, start, stop):
+        if temp:
+            self.tempMask[y1 : y2 + 1, x1 : x2 + 1] = True
+
+    def line(self, start, stop, temp = False):
+        if temp:
+            buffer = self.tempBuffer
+        else:
+            buffer = self.buffer
+
         steps = max(np.abs(np.array(start) - stop)) + 1
         points = np.round(np.linspace(start, stop, steps)).astype(int)
-        self.buffer[points[:, 1], points[:, 0]] = self.currentColor
+
+        buffer[points[:, 1], points[:, 0]] = self.currentColor
+
+        if temp:
+            self.tempMask[points[:, 1], points[:, 0]] = True
+
+    def ellipse(self, start, stop, fill = False, temp = False):
+        if temp:
+            buffer = self.tempBuffer
+        else:
+            buffer = self.buffer
+
+        x1, x2 = sorted([start[0], stop[0]])
+        y1, y2 = sorted([start[1], stop[1]])
+
+        width = (x2 - x1) + 2
+        height = (y2 - y1) + 2
+
+        for x in range(width):
+            for y in range(height):
+                normalized = ((2.0 * x / width) - 1.0, 1.0 - (2.0 * y / height))
+                if (0.95 < normalized[0] ** 2 + normalized[1] ** 2 < 1.05):
+                    buffer[y1 + y, x1 + x] = self.currentColor 
 
     def render(self):
         # NumPy -> PIL -> PhotoImage
 
-        pilImage = Image.fromarray(self.buffer).resize((self.width, self.height), Image.NEAREST) # type: ignore
+        # Expand mask into third dimension to make np.where work [x, y, None] = True | False
+        mask = self.tempMask[..., None]
+
+        pilImage = Image.fromarray(
+            np.where(mask, self.tempBuffer, self.buffer)
+        ).resize(
+            (self.width, self.height),
+              Image.NEAREST # type: ignore
+        ) 
 
         self.imageTK = ImageTk.PhotoImage(pilImage)
 
         self.canvas.itemconfig(self.image, image = self.imageTK)
+
+        self.after(1, lambda: self.tempBuffer.fill(0))
+        self.after(1, lambda: self.tempMask.fill(False))
 
     def onCanvas(self, x, y) -> bool:
         if 0 <= x * self.pixel_size < self.width and 0 <= y * self.pixel_size < self.height:

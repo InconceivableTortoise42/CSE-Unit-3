@@ -132,27 +132,16 @@ class Rectangle(Tool):
         )   
 
 class Line(Tool):
-    def __init__(self) -> None:
-        self.visual = 0
-
     def on_mouse_down(self, app: Paint, event):
         self.last = (event.x, event.y)
 
     def on_mouse_up(self, app: Paint, event):
         app.line(self.last, (event.x, event.y))
-        app.canvas.delete(self.visual)
+        app.render()
 
     def on_mouse_drag(self, app: Paint, event):
-        if self.visual:
-            app.canvas.delete(self.visual)
-
-        self.visual = app.canvas.create_line(
-            self.last[0] * app.pixel_size,
-            self.last[1] * app.pixel_size,
-            event.x * app.pixel_size,
-            event.y * app.pixel_size,
-            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor) # RGB 2 HEX
-        )
+        app.line(self.last, (event.x, event.y), temp = True)
+        app.render()
 
 class CustomShape(Tool):
     def __init__(self):
@@ -186,3 +175,37 @@ class CustomShape(Tool):
             mousePos[1] * app.pixel_size,
             fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor) # RGB 2 HEX
         )
+
+class Ellipse(Tool):
+    def __init__(self):
+        self.visual = 0
+
+    def on_mouse_down(self, app: Paint, event):
+        self.start = (event.x, event.y)
+
+    def on_mouse_drag(self, app: Paint, event):
+        self.stop = (event.x, event.y)
+        self.create_visual(app)
+
+    def on_mouse_up(self, app: Paint, event):
+        self.stop = (event.x, event.y)
+        app.ellipse(self.start, self.stop)
+
+        if self.visual:
+            app.canvas.delete(self.visual)
+
+    def create_visual(self, app: Paint):
+        if self.visual:
+            app.canvas.delete(self.visual)
+
+        x1, x2 = sorted([self.start[0], self.stop[0]])
+        y1, y2 = sorted([self.start[1], self.stop[1]])
+
+        self.visual = app.canvas.create_oval(
+            x1 * app.pixel_size,
+            y1 * app.pixel_size,
+            (x2 + 1) * app.pixel_size,
+            (y2 + 1) * app.pixel_size,
+            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor), # RGB 2 HEX
+            outline = ""
+        )   
