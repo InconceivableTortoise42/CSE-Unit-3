@@ -1,7 +1,5 @@
 from __future__ import annotations  
 from typing import TYPE_CHECKING
-from collections import deque
-from threading import Thread
 import numpy as np
 
 if TYPE_CHECKING:
@@ -42,30 +40,7 @@ class Pencil(Tool):
 
 class Bucket(Tool):
     def on_mouse_down(self, app: Paint, event):
-        targetColor = tuple(app.buffer[event.y, event.x])
-        newColor = app.currentColor
-
-        if targetColor == newColor:
-            return
-
-        queue = deque() 
-        queue.append((event.x, event.y))
-
-        while queue:
-            x, y = queue.popleft()
-             
-            if not app.onCanvas(x, y):
-                continue
-            
-            if not tuple(app.buffer[y, x]) == targetColor:
-                continue
-
-            app.buffer[y, x] = newColor
-
-            queue.append((x - 1, y))
-            queue.append((x + 1, y))
-            queue.append((x, y + 1))
-            queue.append((x, y - 1))
+        app.floodFill((event.x, event.y))
 
 class Eraser(Tool):
     def on_mouse_down(self, app: Paint, event):
@@ -111,25 +86,14 @@ class Rectangle(Tool):
     def on_mouse_up(self, app: Paint, event):
         self.stop = (event.x, event.y)
         app.rect(self.start, self.stop)
-
-        if self.visual:
-            app.canvas.delete(self.visual)
+        app.render()
 
     def create_visual(self, app: Paint):
-        if self.visual:
-            app.canvas.delete(self.visual)
-
         x1, x2 = sorted([self.start[0], self.stop[0]])
         y1, y2 = sorted([self.start[1], self.stop[1]])
 
-        self.visual = app.canvas.create_rectangle(
-            x1 * app.pixel_size,
-            y1 * app.pixel_size,
-            (x2 + 1) * app.pixel_size,
-            (y2 + 1) * app.pixel_size,
-            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor), # RGB 2 HEX
-            outline = ""
-        )   
+        app.rect((x1, y1), (x2, y2), temp = True)
+        app.render()
 
 class Line(Tool):
     def on_mouse_down(self, app: Paint, event):
@@ -146,7 +110,6 @@ class Line(Tool):
 class CustomShape(Tool):
     def __init__(self):
         self.points = []
-        self.visual = 0
 
     def on_mouse_up(self, app: Paint, event):
         if self.points:
@@ -161,20 +124,12 @@ class CustomShape(Tool):
     def on_enter(self, app: Paint):
         app.line(self.points[-1], self.points[0])
         self.points = []
-        app.canvas.delete(self.visual)
+        app.clearTempBuffer()
         app.render()
     
     def create_visual(self, app: Paint, mousePos):
-        if self.visual:
-            app.canvas.delete(self.visual)
-
-        self.visual = app.canvas.create_line(
-            self.points[-1][0] * app.pixel_size,
-            self.points[-1][1] * app.pixel_size,
-            mousePos[0] * app.pixel_size,
-            mousePos[1] * app.pixel_size,
-            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor) # RGB 2 HEX
-        )
+        app.line(self.points[-1], mousePos, temp = True)
+        app.render()
 
 class Ellipse(Tool):
     def __init__(self):
@@ -191,21 +146,5 @@ class Ellipse(Tool):
         self.stop = (event.x, event.y)
         app.ellipse(self.start, self.stop)
 
-        if self.visual:
-            app.canvas.delete(self.visual)
-
     def create_visual(self, app: Paint):
-        if self.visual:
-            app.canvas.delete(self.visual)
-
-        x1, x2 = sorted([self.start[0], self.stop[0]])
-        y1, y2 = sorted([self.start[1], self.stop[1]])
-
-        self.visual = app.canvas.create_oval(
-            x1 * app.pixel_size,
-            y1 * app.pixel_size,
-            (x2 + 1) * app.pixel_size,
-            (y2 + 1) * app.pixel_size,
-            fill = '#{:02x}{:02x}{:02x}'.format(*app.currentColor), # RGB 2 HEX
-            outline = ""
-        )   
+        app.ellipse(self.start, self.stop, temp = True)

@@ -8,4 +8,5 @@ dependencies = [
     "fastapi>=0.135.3",
     "numpy>=2.4.4",
     "pillow>=12.2.0",
+    "websockets>=16.0",
 ]
