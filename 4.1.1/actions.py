@@ -9,13 +9,13 @@ def rect(buffer, start: Point, stop: Point, color, fill = None, maskBuffer = Non
 
     buffer[y1 : y2 + 1, x1 : x2 + 1] = color
 
-    if maskBuffer:
+    if not isinstance(maskBuffer, type(None)):
         maskBuffer[y1 : y2 + 1, x1 : x2 + 1] = True
 
 
 def line(buffer, start: Point, stop: Point, color, maskBuffer = None):
 
-    steps = max(np.abs(np.array(start) - stop)) + 1
+    steps = max(np.abs(np.array((start.x - stop.x, start.y - stop.y)))) + 1
 
     # linear interpolation 
 
@@ -28,7 +28,7 @@ def line(buffer, start: Point, stop: Point, color, maskBuffer = None):
 
     buffer[points[:, 1], points[:, 0]] = color
 
-    if maskBuffer:
+    if not isinstance(maskBuffer, type(None)):
         maskBuffer[points[:, 1], points[:, 0]] = True
 
 def ellipse(buffer, start: Point, stop: Point, color, fill: bool, maskBuffer = None):
@@ -55,7 +55,7 @@ def ellipse(buffer, start: Point, stop: Point, color, fill: bool, maskBuffer = N
             for fx in range(cx - px, cx + px + 1):
                 buffer[cy + py, fx] = color
                 buffer[cy - py, fx] = color
-                if maskBuffer:
+                if not isinstance(maskBuffer, type(None)):
                     maskBuffer[cy + py, fx] = True
                     maskBuffer[cy - py, fx] = True
         else:
@@ -67,7 +67,7 @@ def ellipse(buffer, start: Point, stop: Point, color, fill: bool, maskBuffer = N
             ]
             for px_, py_ in points:
                 buffer[py_, px_] = color
-                if maskBuffer:
+                if not isinstance(maskBuffer, type(None)):
                     maskBuffer[py_, px_] = True
 
     # --- Region 1 ---
@@ -116,7 +116,7 @@ def floodFill(buffer, point: Point, color):
     if targetColor == newColor:
         return
 
-    width, height = buffer.shape
+    width, height, _ = buffer.shape
 
     def onCanvas(x, y):
         return 0 <= x < width and 0 <= y < height

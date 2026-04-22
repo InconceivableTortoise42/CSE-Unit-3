@@ -83,20 +83,20 @@ class Paint(tk.Frame):
         event.x = int(event.x / self.pixel_size)
         event.y = int(event.y / self.pixel_size)
         self.currentTool.on_mouse_drag(self, event)
-        self.render()        
+        self.render()
 
     def mouseUp(self, event):
         event.x = int(event.x / self.pixel_size)
         event.y = int(event.y / self.pixel_size)
         self.currentTool.on_mouse_up(self, event)
-        self.render()        
+        self.render()
 
     def mouseDown(self, event):
         event.x = int(event.x / self.pixel_size)
         event.y = int(event.y / self.pixel_size)
         self.currentTool.on_mouse_down(self, event)
         self.lastPos = Point(event.x, event.y)
-        self.render()        
+        self.render()
 
     def mouseMove(self, event):
         event.x = int(event.x / self.pixel_size)
@@ -110,69 +110,72 @@ class Paint(tk.Frame):
         self.tempBuffer.fill(0)
         self.tempMask.fill(False)
 
-    def rect(self, start: Point, stop: Point, color = None, fill = False, temp = False):
-        if not color:
-            color = self.currentColor
-
+    def rect(self, start: Point, stop: Point, fill = False, temp = False):
         if temp:
             self.clearTempBuffer()
-            actions.rect(self.tempBuffer, start, stop, color, self.tempMask)
+            actions.rect(self.tempBuffer, start, stop, self.currentColor, fill, self.tempMask)
 
         else:
-            actions.rect(self.buffer, start, stop, color)
+            actions.rect(self.buffer, start, stop, self.currentColor)
 
             self.networkHandler.sendAction({
                 "rect": {
                     "start": asdict(start),
                     "stop": asdict(stop),
-                    "color": color,
+                    "color": self.currentColor,
                     "fill": fill
                 }
             })
 
 
-    def line(self, start: Point, stop: Point, color, temp = False):
+    def line(self, start: Point, stop: Point, temp = False):
         if temp:
             self.clearTempBuffer()
-            actions.line(self.tempBuffer, start, stop, color, self.tempBuffer)        
+            actions.line(self.tempBuffer, start, stop, self.currentColor, self.tempMask)        
 
         else:
-            actions.line(self.buffer, start, stop, color)        
+            actions.line(self.buffer, start, stop, self.currentColor)        
 
             self.networkHandler.sendAction({
                 "line": {
                     "start": asdict(start),
                     "stop": asdict(stop),
-                    "color": color
+                    "color": self.currentColor
                 }
             })
 
-    def ellipse(self, start: Point, stop: Point, color, fill = False, temp = False):
+    def ellipse(self, start: Point, stop: Point, fill = False, temp = False):
         if temp:
             self.clearTempBuffer()
-            actions.ellipse(self.tempBuffer, start, stop, color, fill, self.tempMask)
+            actions.ellipse(self.tempBuffer, start, stop, self.currentColor, fill, self.tempMask)
 
         else:
-            actions.ellipse(self.buffer, start, stop, color, fill)
+            actions.ellipse(self.buffer, start, stop, self.currentColor, fill)
 
             self.networkHandler.sendAction({
                 "ellipse": {
                     "start": asdict(start),
                     "stop": asdict(stop),
-                    "color": color,
+                    "color": self.currentColor,
                     "fill": fill
                 }
             })
 
-    def fill(self, point: Point, color):
-        actions.floodFill(self.buffer, point, color)
+    def fill(self, point: Point):
+        actions.floodFill(self.buffer, point, self.currentColor)
 
         self.networkHandler.sendAction({
             "fill": {
-                "point": point,
-                "color": color
+                "point": asdict(point),
+                "color": self.currentColor 
             }
         })
+
+    def onCanvas(self, x, y) -> bool:
+        if 0 <= x * self.pixel_size < self.width and 0 <= y * self.pixel_size < self.height:
+            return True
+        else:
+            return False
 
     def render(self):
         # NumPy -> PIL -> PhotoImage
@@ -207,3 +210,5 @@ class Paint(tk.Frame):
         elif "fill" in data:
             fill = data["fill"]
             actions.floodFill(self.buffer, Point(**fill["point"]), fill["color"])
+
+        self.render()

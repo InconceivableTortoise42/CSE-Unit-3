@@ -30,7 +30,6 @@ class Pencil(Tool):
         app.line(app.lastPos, Point(event.x, event.y))
         app.lastPos = Point(event.x, event.y)
 
-
     def on_mouse_up(self, app: Paint, event):
         app.currentStroke.append((event.x, event.y))
         app.currentStroke = []
@@ -48,8 +47,8 @@ class Eraser(Tool):
         self.erace(app, event.x, event.y)
 
     def on_mouse_drag(self, app: Paint, event):
-        num_steps = max(np.abs(np.array(app.lastPos) - (event.x, event.y))) + 1
-        points = np.round(np.linspace((app.lastPos.x, app.lastPos.y), (event.x, event.y), num_steps)).astype(int)
+        num_steps = max(np.abs(np.array((app.lastPos.x - event.x, app.lastPos.y - event.y)))) + 1
+        points = np.round(np.linspace((app.lastPos.x, app.lastPos.y), (event.x, event.y), num_steps, retstep = False)).astype(int)
 
         app.lastPos = Point(event.x, event.y)
 
@@ -110,17 +109,17 @@ class Line(Tool):
 
 class CustomShape(Tool):
     def __init__(self):
-        self.points = []
+        self.points: list[Point] = []
 
     def on_mouse_up(self, app: Paint, event):
         if self.points:
             app.line(self.points[-1], Point(event.x, event.y))
-        self.points.append((event.x, event.y))
+        self.points.append(Point(event.x, event.y))
         app.render()
     
     def on_mouse_move(self, app: Paint, event):
         if self.points:
-            self.create_visual(app, (event.x, event.y))
+            self.create_visual(app, Point(event.x, event.y))
 
     def on_enter(self, app: Paint):
         app.line(self.points[-1], self.points[0])
@@ -128,7 +127,7 @@ class CustomShape(Tool):
         app.clearTempBuffer()
         app.render()
     
-    def create_visual(self, app: Paint, mousePos):
+    def create_visual(self, app: Paint, mousePos: Point):
         app.line(self.points[-1], mousePos, temp = True)
         app.render()
 
