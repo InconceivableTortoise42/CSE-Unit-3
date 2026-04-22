@@ -1,6 +1,7 @@
 from __future__ import annotations  
 from typing import TYPE_CHECKING
 from network import NetworkHander
+from dataclasses import asdict
 from PIL import Image, ImageTk
 from colorbar import ColorBar
 from toolbar import ToolBar
@@ -109,67 +110,67 @@ class Paint(tk.Frame):
         self.tempBuffer.fill(0)
         self.tempMask.fill(False)
 
-    def onCanvas(self, x, y) -> bool:
-        if 0 <= x * self.pixel_size < self.width and 0 <= y * self.pixel_size < self.height:
-            return True
-        else:
-            return False
-
     def rect(self, start: Point, stop: Point, color = None, fill = False, temp = False):
         if not color:
             color = self.currentColor
 
         if temp:
             self.clearTempBuffer()
-            buffer = self.tempBuffer
+            actions.rect(self.tempBuffer, start, stop, color, self.tempMask)
+
         else:
-            buffer = self.buffer
+            actions.rect(self.buffer, start, stop, color)
 
             self.networkHandler.sendAction({
                 "rect": {
-                    "start": start,
-                    "stop": stop,
-                    "fill": fill,
-                    "color": color
-                }
-            })
-
-        actions.rect(buffer, start, stop, color, )
-
-    def line(self, start: Point, stop: Point, temp = False):
-        if temp:
-            self.clearTempBuffer()
-            buffer = self.tempBuffer
-        else:
-            buffer = self.buffer
-
-            self.networkHandler.sendAction({
-                "line": {
-                    "start": start,
-                    "stop": stop
-                }
-            })
-
-    def ellipse(self, start: Point, stop: Point, fill = False, temp = False):
-        if temp:
-            self.clearTempBuffer()
-            buffer = self.tempBuffer
-        else:
-            buffer = self.buffer
-            self.networkHandler.sendAction({
-                "ellipse": {
-                    "start": start,
-                    "stop": stop,
+                    "start": asdict(start),
+                    "stop": asdict(stop),
+                    "color": color,
                     "fill": fill
                 }
             })
 
-    def fill(self, point: Point):
+
+    def line(self, start: Point, stop: Point, color, temp = False):
+        if temp:
+            self.clearTempBuffer()
+            actions.line(self.tempBuffer, start, stop, color, self.tempBuffer)        
+
+        else:
+            actions.line(self.buffer, start, stop, color)        
+
+            self.networkHandler.sendAction({
+                "line": {
+                    "start": asdict(start),
+                    "stop": asdict(stop),
+                    "color": color
+                }
+            })
+
+    def ellipse(self, start: Point, stop: Point, color, fill = False, temp = False):
+        if temp:
+            self.clearTempBuffer()
+            actions.ellipse(self.tempBuffer, start, stop, color, fill, self.tempMask)
+
+        else:
+            actions.ellipse(self.buffer, start, stop, color, fill)
+
+            self.networkHandler.sendAction({
+                "ellipse": {
+                    "start": asdict(start),
+                    "stop": asdict(stop),
+                    "color": color,
+                    "fill": fill
+                }
+            })
+
+    def fill(self, point: Point, color):
+        actions.floodFill(self.buffer, point, color)
 
         self.networkHandler.sendAction({
             "fill": {
                 "point": point,
-                "color": self.currentColor
+                "color": color
             }
         })
 
@@ -191,4 +192,18 @@ class Paint(tk.Frame):
         self.canvas.itemconfig(self.image, image = self.imageTK)
 
     def runAction(self, data):
-        pass
+        if "rect" in data:
+            rect = data["rect"]
+            actions.rect(self.buffer, Point(**rect["start"]), Point(**rect["stop"]), rect["color"], rect["fill"]) 
+        
+        elif "line" in data:
+            line = data["line"]
+            actions.line(self.buffer, Point(**line["start"]), Point(**line["stop"]), line["color"])
+
+        elif "ellipse" in data:
+            ellipse = data["ellipse"]
+            actions.ellipse(self.buffer, Point(**ellipse["start"]), Point(**ellipse["stop"]), ellipse["color"], ellipse["fill"])
+
+        elif "fill" in data:
+            fill = data["fill"]
+            actions.floodFill(self.buffer, Point(**fill["point"]), fill["color"])

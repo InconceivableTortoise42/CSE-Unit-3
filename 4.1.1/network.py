@@ -32,14 +32,18 @@ class NetworkHander:
             await websocket.send(message)
 
     async def wsHander(self):
-        async with websockets.connect(self.wsURL) as websocket:
-            while True:
-                await asyncio.gather(self.sender(websocket), self.reciever(websocket))                
+        try:
+            async with websockets.connect(self.wsURL) as websocket:
+                while True:
+                    await asyncio.gather(self.sender(websocket), self.reciever(websocket))                
+        
+        except OSError as error:
+            print(f"Network error: {error}") 
 
     def proccessIncoming(self):
         while not self.queueIncoming.empty():
             data: dict = json.loads(self.queueIncoming.get())
-            self.master.action(data)
+            self.master.runAction(data)
 
         self.master.after(100, self.proccessIncoming)
 

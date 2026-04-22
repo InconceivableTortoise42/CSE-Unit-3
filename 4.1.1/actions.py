@@ -2,7 +2,7 @@ from collections import deque
 from point import Point
 import numpy as np
 
-def rect(buffer, start: Point, stop: Point, color: tuple[int, int, int], maskBuffer = None,):
+def rect(buffer, start: Point, stop: Point, color, fill = None, maskBuffer = None):
 
     x1, x2 = sorted([start.x, stop.x])
     y1, y2 = sorted([start.y, stop.y])
@@ -13,7 +13,7 @@ def rect(buffer, start: Point, stop: Point, color: tuple[int, int, int], maskBuf
         maskBuffer[y1 : y2 + 1, x1 : x2 + 1] = True
 
 
-def line(buffer, start: Point, stop: Point, color: tuple[int, int, int], fill: bool, maskBuffer = None):
+def line(buffer, start: Point, stop: Point, color, maskBuffer = None):
 
     steps = max(np.abs(np.array(start) - stop)) + 1
 
@@ -31,7 +31,7 @@ def line(buffer, start: Point, stop: Point, color: tuple[int, int, int], fill: b
     if maskBuffer:
         maskBuffer[points[:, 1], points[:, 0]] = True
 
-def ellipse(buffer, start: Point, stop: Point, color: tuple[int, int, int], fill: bool, maskBuffer = None):
+def ellipse(buffer, start: Point, stop: Point, color, fill: bool, maskBuffer = None):
     x1, x2 = sorted([start.x, stop.x])
     y1, y2 = sorted([start.y, stop.y])
 
@@ -106,9 +106,9 @@ def ellipse(buffer, start: Point, stop: Point, color: tuple[int, int, int], fill
             dy -= 2 * rx2
             p2 += dx - dy + rx2
 
-def floodFill(self, point: Point, color: tuple[int, int, int]):
+def floodFill(buffer, point: Point, color):
 
-    targetColor = tuple(self.buffer[point.y, point.x])
+    targetColor = tuple(buffer[point.y, point.x])
 
     # Either current color, or if over network: provided color
     newColor = color
@@ -116,19 +116,24 @@ def floodFill(self, point: Point, color: tuple[int, int, int]):
     if targetColor == newColor:
         return
 
+    width, height = buffer.shape
+
+    def onCanvas(x, y):
+        return 0 <= x < width and 0 <= y < height
+
     queue = deque() 
     queue.append(point)
 
     while queue:
         x, y = queue.popleft()
             
-        if not self.onCanvas(x, y):
+        if not onCanvas(x, y):
             continue
         
-        if not tuple(self.buffer[y, x]) == targetColor:
+        if not tuple(buffer[y, x]) == targetColor:
             continue
 
-        self.buffer[y, x] = newColor
+        buffer[y, x] = newColor
 
         queue.append((x - 1, y))
         queue.append((x + 1, y))
