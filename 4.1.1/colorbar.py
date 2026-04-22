@@ -172,10 +172,5 @@ class ColorBar(tk.Frame):
 
     def getColor(self) -> tuple[int, int, int]:
         # Raw RGB 0..65535 to 0..255
-        result: list[int] = [] 
-
-        for color in self.master.winfo_rgb(self.primaryColor):
-            color = int(color // 256)
-            result.append(color)
-        
-        return tuple(result)
+        # Type checking ignored because i know the value is correct
+        return tuple([color // 256 for color in self.master.winfo_rgb(self.primaryColor)]) # type: ignore

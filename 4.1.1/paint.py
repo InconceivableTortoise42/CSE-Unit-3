@@ -1,6 +1,6 @@
 from __future__ import annotations  
 from typing import TYPE_CHECKING
-from network import NetworkHander
+from network import NetworkHandler
 from dataclasses import asdict
 from PIL import Image, ImageTk
 from colorbar import ColorBar
@@ -8,16 +8,19 @@ from toolbar import ToolBar
 from point import Point
 import tkinter as tk
 import numpy as np
+import asyncio
 import actions
 
 if TYPE_CHECKING:
     from tools import Tool
 
 class Paint(tk.Frame):
-    def __init__(self, network = False, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, master: tk.Tk, network = False, *args, **kwargs):
+        super().__init__(master = master, *args, **kwargs)
 
         self.configure(background = "gray")
+
+        self.master = master
 
         self.width = 600
         self.height = 600
@@ -70,8 +73,14 @@ class Paint(tk.Frame):
 
         # Network
         if network:
-            self.networkHandler = NetworkHander("", self)
+            self.networkHandler = NetworkHandler("ws://localhost:8000", self)
+            self.networkHandler.run()
 
+        self.master.protocol("WM_DELETE_WINDOW", self.close)
+
+    def close(self):
+        self.master.destroy()
+        self.networkHandler.stop()
 
     def setTool(self, tool: Tool):
         self.currentTool = tool
@@ -89,6 +98,7 @@ class Paint(tk.Frame):
         event.x = int(event.x / self.pixel_size)
         event.y = int(event.y / self.pixel_size)
         self.currentTool.on_mouse_up(self, event)
+        self.clearTempBuffer()
         self.render()
 
     def mouseDown(self, event):
@@ -119,13 +129,12 @@ class Paint(tk.Frame):
             actions.rect(self.buffer, start, stop, self.currentColor)
 
             self.networkHandler.sendAction({
-                "rect": {
-                    "start": asdict(start),
-                    "stop": asdict(stop),
-                    "color": self.currentColor,
-                    "fill": fill
-                }
-            })
+            "rect": {
+                "start": asdict(start),
+                "stop": asdict(stop),
+                "color": self.currentColor,
+                "fill": fill
+            }})
 
 
     def line(self, start: Point, stop: Point, temp = False):
@@ -193,6 +202,7 @@ class Paint(tk.Frame):
         self.imageTK = ImageTk.PhotoImage(pilImage)
 
         self.canvas.itemconfig(self.image, image = self.imageTK)
+
 
     def runAction(self, data):
         if "rect" in data:
