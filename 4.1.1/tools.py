@@ -1,5 +1,6 @@
 from __future__ import annotations  
 from typing import TYPE_CHECKING
+from point import Point
 import numpy as np
 
 if TYPE_CHECKING:
@@ -26,8 +27,8 @@ class Pencil(Tool):
         self.draw(app, event.x, event.y, app.currentColor)
 
     def on_mouse_drag(self, app: Paint, event):
-        app.line(app.lastPos, (event.x, event.y))
-        app.lastPos = (event.x, event.y)
+        app.line(app.lastPos, Point(event.x, event.y))
+        app.lastPos = Point(event.x, event.y)
 
 
     def on_mouse_up(self, app: Paint, event):
@@ -40,7 +41,7 @@ class Pencil(Tool):
 
 class Bucket(Tool):
     def on_mouse_down(self, app: Paint, event):
-        app.floodFill((event.x, event.y))
+        app.fill(Point(event.x, event.y))
 
 class Eraser(Tool):
     def on_mouse_down(self, app: Paint, event):
@@ -48,9 +49,9 @@ class Eraser(Tool):
 
     def on_mouse_drag(self, app: Paint, event):
         num_steps = max(np.abs(np.array(app.lastPos) - (event.x, event.y))) + 1
-        points = np.round(np.linspace(app.lastPos, (event.x, event.y), num_steps)).astype(int)
+        points = np.round(np.linspace((app.lastPos.x, app.lastPos.y), (event.x, event.y), num_steps)).astype(int)
 
-        app.lastPos = (event.x, event.y)
+        app.lastPos = Point(event.x, event.y)
 
         for point in points:
             self.erace(app, point[0], point[1])
@@ -77,34 +78,34 @@ class Rectangle(Tool):
         self.visual = 0
 
     def on_mouse_down(self, app: Paint, event):
-        self.start = (event.x, event.y)
+        self.start = Point(event.x, event.y)
 
     def on_mouse_drag(self, app: Paint, event):
-        self.stop = (event.x, event.y)
+        self.stop = Point(event.x, event.y)
         self.create_visual(app)
 
     def on_mouse_up(self, app: Paint, event):
-        self.stop = (event.x, event.y)
+        self.stop = Point(event.x, event.y)
         app.rect(self.start, self.stop)
         app.render()
 
     def create_visual(self, app: Paint):
-        x1, x2 = sorted([self.start[0], self.stop[0]])
-        y1, y2 = sorted([self.start[1], self.stop[1]])
+        x1, x2 = sorted([self.start.x, self.stop.x])
+        y1, y2 = sorted([self.start.y, self.stop.y])
 
-        app.rect((x1, y1), (x2, y2), temp = True)
+        app.rect(Point(x1, y1), Point(x2, y2), temp = True)
         app.render()
 
 class Line(Tool):
     def on_mouse_down(self, app: Paint, event):
-        self.last = (event.x, event.y)
+        self.last = Point(event.x, event.y)
 
     def on_mouse_up(self, app: Paint, event):
-        app.line(self.last, (event.x, event.y))
+        app.line(self.last, Point(event.x, event.y))
         app.render()
 
     def on_mouse_drag(self, app: Paint, event):
-        app.line(self.last, (event.x, event.y), temp = True)
+        app.line(self.last, Point(event.x, event.y), temp = True)
         app.render()
 
 class CustomShape(Tool):
@@ -113,7 +114,7 @@ class CustomShape(Tool):
 
     def on_mouse_up(self, app: Paint, event):
         if self.points:
-            app.line(self.points[-1], (event.x, event.y))
+            app.line(self.points[-1], Point(event.x, event.y))
         self.points.append((event.x, event.y))
         app.render()
     
@@ -136,14 +137,14 @@ class Ellipse(Tool):
         self.visual = 0
 
     def on_mouse_down(self, app: Paint, event):
-        self.start = (event.x, event.y)
+        self.start = Point(event.x, event.y)
 
     def on_mouse_drag(self, app: Paint, event):
-        self.stop = (event.x, event.y)
+        self.stop = Point(event.x, event.y)
         self.create_visual(app)
 
     def on_mouse_up(self, app: Paint, event):
-        self.stop = (event.x, event.y)
+        self.stop = Point(event.x, event.y)
         app.ellipse(self.start, self.stop)
 
     def create_visual(self, app: Paint):

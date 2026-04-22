@@ -170,6 +170,12 @@ class ColorBar(tk.Frame):
         self.setPrimaryColor(secondary)
         self.setSecondaryColor(primary)
 
-    def getColor(self):
+    def getColor(self) -> tuple[int, int, int]:
         # Raw RGB 0..65535 to 0..255
-        return tuple((color // 256 for color in self.master.winfo_rgb(self.primaryColor)))
+        result: list[int] = [] 
+
+        for color in self.master.winfo_rgb(self.primaryColor):
+            color = int(color // 256)
+            result.append(color)
+        
+        return tuple(result)

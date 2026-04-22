@@ -18,7 +18,7 @@ class App(tk.Tk):
 
         self.configure(menu = MenuBar())
 
-        self.paintScreen = Paint(self)
+        self.paintScreen = Paint(master = self, network = True)
 
         self.paintScreen.pack(expand = True, fill = "both")
 
