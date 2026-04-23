@@ -6,9 +6,11 @@ import queue
 import json
 
 class NetworkHandler:
-    def __init__(self, websocketURL: str, master):
-        self.wsURL = websocketURL
+    def __init__(self, master, websocketURL: str):
+        self.wsURL: str = websocketURL
         self.master = master
+
+        self.running: bool = False
 
         self.queueIncoming = queue.Queue()
         self.queueOutgoing = queue.Queue()
@@ -16,7 +18,8 @@ class NetworkHandler:
         self.master.after(100, self.processIncoming)
 
     def sendAction(self, action: dict):
-        self.queueOutgoing.put(json.dumps(action))
+        if self.running:
+            self.queueOutgoing.put(json.dumps(action))
 
     async def receiver(self, websocket: websockets.ClientConnection):
         try:
@@ -66,17 +69,19 @@ class NetworkHandler:
         )
 
     def stop(self):
-        if hasattr(self, "websocket"):
-            self.asyncioLoop.call_soon_threadsafe( 
-                lambda: asyncio.create_task(
-                    self.websocket.close(code = 1000, reason = "Application Closed")
+        if self.running:
+            if hasattr(self, "websocket"):
+                self.asyncioLoop.call_soon_threadsafe( 
+                    lambda: asyncio.create_task(
+                        self.websocket.close(code = 1000, reason = "Application Closed")
+                    )
                 )
-            )
 
-        _exit(0)
-
+            _exit(0)
 
     def run(self):
+        self.running = True
+
         self.wsThread = threading.Thread(
             target = self.runWsHandler,
             daemon = True

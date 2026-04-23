@@ -1,6 +1,9 @@
 from PIL import Image, ImageTk 
 from paint import Paint
 import tkinter as tk
+import subprocess
+from tkinter import messagebox
+import re
 
 class App(tk.Tk):
     def __init__(self):
@@ -12,19 +15,56 @@ class App(tk.Tk):
         self.resizable = True
         self.geometry("800x600")
 
-        # self.mainMenu= MainMenu(self)
+        self.mainMenu = MainMenu(self)
 
-        # self.mainMenu.pack(expand = True, fill = "both")
+        self.mainMenu.pack(expand = True, fill = "both")
 
-        self.configure(menu = MenuBar())
 
-        self.paintScreen = Paint(master = self, network = True)
+        self.mainloop()
+
+    def launchPaint(self, network: bool, wsUrl:str = "ws://localhost:8000"):
+        self.mainMenu.destroy()
+
+        self.paintScreen = Paint(master = self, network = network, wsUrl = wsUrl)
 
         self.paintScreen.pack(expand = True, fill = "both")
 
         self.bind("x", lambda _: self.paintScreen.colorBar.swapPrimarySecondary())
 
-        self.mainloop()
+        self.configure(menu = MenuBar())
+
+    def launchServer(self) -> str:
+        command = 'start cmd /k "uvicorn main:app"'
+
+        subprocess.Popen(command, shell=True)
+
+        command = 'start cmd /k "./cloudflared.exe tunnel --url http://localhost:8000'
+        
+        process = subprocess.Popen(
+            command,
+            stdout = subprocess.PIPE,
+            shell = True
+        )
+        
+        print("Waiting for tunnel to create...")
+        
+        while True:
+            if process.stdout:
+                line = process.stdout.readline()
+
+                if not line:
+                    break
+                    
+                match = re.search(r"https://.*\.trycloudflare\.com", str(line))
+                print(line)
+
+                if match:
+                    print("Found Match!")
+                    return match.group(0)
+
+            self.update()
+
+        return "ws://localhost:8000"
 
 class MenuBar(tk.Menu):
     def __init__(self, *args, **kwargs):
@@ -48,8 +88,10 @@ class MenuBar(tk.Menu):
         self.add_cascade(label = "File", menu = self.fileMenu)
 
 class MainMenu(tk.Frame):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
+    def __init__(self, master: App, *args, **kwargs):
+        super().__init__(master = master)
+
+        self.app: App = master
 
         self.configure(background = "#FEFEFE")
 
@@ -70,7 +112,7 @@ class MainMenu(tk.Frame):
         self.singlePlayer = tk.Button(
             self.buttonWrapper,
             text = "Single Player",
-            command = lambda: print("Simgle Player")
+            command = lambda: self.app.launchPaint(False)
         )
 
         self.singlePlayer.pack(expand = True, pady = 5)
@@ -78,7 +120,7 @@ class MainMenu(tk.Frame):
         self.multiPlayer= tk.Button(
             self.buttonWrapper,
             text = "Multi Player",
-            command = lambda: print("Multi Player")
+            command = self.networkScreen
         )
 
         self.multiPlayer.pack(expand = True, pady = 5)
@@ -92,6 +134,33 @@ class MainMenu(tk.Frame):
         self.quitButton.pack(expand = True, pady = 5)
 
         self.buttonWrapper.pack(expand = True)
+
+    def networkScreen(self):
+        for child in self.winfo_children():
+            child.destroy()
+
+        self.hostRoomButton = tk.Button(self, text = "New Room", command = self.hostRoom)
+        self.hostRoomButton.pack(expand = True, anchor = "s")
+
+        self.orLabel = tk.Label(self, text = "OR", font = ("TKDefaultFont", 30))
+        self.orLabel.pack(pady = 20)
+
+        self.entryLabel = tk.Label(self, text = "Existing room websocket url:")
+        self.entryLabel.pack()
+        self.urlEntry = tk.Entry(self, width = 60)
+        self.urlEntry.pack() 
+        self.connectButton = tk.Button(self, text = "Connect", command = self.connect)
+        self.connectButton.pack(expand = True, anchor = "n")
+
+    def connect(self):
+        self.app.launchPaint(wsUrl = self.urlEntry.get(), network = True)
+        self.destroy()
+
+    def hostRoom(self):
+        self.tunnel = self.app.launchServer()
+        self.showUrl = messagebox.showinfo("Websocket URL", f"Your Url: {self.tunnel}")
+        self.app.launchPaint(network = True, wsUrl = self.tunnel)
+        self.destroy()
 
 
 if __name__ == "__main__":

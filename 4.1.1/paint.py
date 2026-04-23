@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from tools import Tool
 
 class Paint(tk.Frame):
-    def __init__(self, master: tk.Tk, network = False, *args, **kwargs):
+    def __init__(self, master: tk.Tk, wsUrl: str, network = False, *args, **kwargs):
         super().__init__(master = master, *args, **kwargs)
 
         self.configure(background = "gray")
@@ -72,8 +72,9 @@ class Paint(tk.Frame):
         self.master.bind("<Return>", lambda _: self.keyEnter())
 
         # Network
+        self.networkHandler = NetworkHandler(self, wsUrl)
+
         if network:
-            self.networkHandler = NetworkHandler("ws://localhost:8000", self)
             self.networkHandler.run()
 
         self.master.protocol("WM_DELETE_WINDOW", self.close)
