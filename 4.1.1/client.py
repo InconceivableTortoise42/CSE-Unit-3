@@ -1,8 +1,11 @@
 from PIL import Image, ImageTk 
+from tkinter import messagebox
+from typing import Callable
 from paint import Paint
+from tkinter import ttk
 import tkinter as tk
 import subprocess
-from tkinter import messagebox
+import threading
 import re
 
 class App(tk.Tk):
@@ -22,7 +25,7 @@ class App(tk.Tk):
 
         self.mainloop()
 
-    def launchPaint(self, network: bool, wsUrl:str = "ws://localhost:8000"):
+    def launchPaint(self, network: bool, wsUrl: str = "ws://localhost:8000"):
         self.mainMenu.destroy()
 
         self.paintScreen = Paint(master = self, network = network, wsUrl = wsUrl)
@@ -33,38 +36,57 @@ class App(tk.Tk):
 
         self.configure(menu = MenuBar())
 
-    def launchServer(self) -> str:
-        command = 'start cmd /k "uvicorn main:app"'
+    def launchServer(self, on_tunnel_ready: Callable[[str], None]) -> None:
 
-        subprocess.Popen(command, shell=True)
-
-        command = 'start cmd /k "./cloudflared.exe tunnel --url http://localhost:8000'
-        
-        process = subprocess.Popen(
-            command,
-            stdout = subprocess.PIPE,
+        # Server
+        subprocess.Popen(
+            'start cmd /k "uvicorn main:app --host 0.0.0.0"',
             shell = True
         )
-        
-        print("Waiting for tunnel to create...")
-        
-        while True:
-            if process.stdout:
-                line = process.stdout.readline()
 
-                if not line:
-                    break
-                    
-                match = re.search(r"https://.*\.trycloudflare\.com", str(line))
-                print(line)
+        self.focus_force()
 
+        # Tunnel
+
+        process = subprocess.Popen(
+            ["./cloudflared.exe", "tunnel", "--url", "http://0.0.0.0:8000"],
+            stdout = subprocess.PIPE,
+            stderr = subprocess.STDOUT,
+            text = True  
+        )
+
+        self.tunnelUrl = None
+
+        # Stdout Thread
+        def readOutput():
+            for line in process.stdout: # type: ignore
+                match = re.search(r"https://.*\.trycloudflare\.com", line)
                 if match:
-                    print("Found Match!")
-                    return match.group(0)
+                    self.tunnelUrl = match.group(0).replace("https://", "wss://")
+                    break
 
-            self.update()
+        threading.Thread(target = readOutput, daemon = True).start() 
 
-        return "ws://localhost:8000"
+        # Loader
+        self.loadingWindow = tk.Toplevel(self)
+        self.loadingWindow.title("Starting server...")
+        
+        self.loader = ttk.Progressbar(self.loadingWindow, mode = "indeterminate", length = 300)
+        self.loader.pack(padx = 20, pady = 20)
+        self.loader.start()
+
+        # Polling
+
+        def poll():
+            if self.tunnelUrl:
+                self.loader.stop()
+                self.loadingWindow.destroy()
+                on_tunnel_ready(self.tunnelUrl)
+            else:
+                self.after(100, poll)
+
+        poll()
+
 
 class MenuBar(tk.Menu):
     def __init__(self, *args, **kwargs):
@@ -157,11 +179,13 @@ class MainMenu(tk.Frame):
         self.destroy()
 
     def hostRoom(self):
-        self.tunnel = self.app.launchServer()
-        self.showUrl = messagebox.showinfo("Websocket URL", f"Your Url: {self.tunnel}")
-        self.app.launchPaint(network = True, wsUrl = self.tunnel)
-        self.destroy()
+        self.app.launchServer(self.tunnelReady)
 
+    def tunnelReady(self, tunnelUrl: str):
+        self.showUrl = messagebox.showinfo("Websocket URL", f"Your Url: {tunnelUrl}")
+        print(tunnelUrl)
+        self.app.launchPaint(network = True, wsUrl = tunnelUrl)
+        self.destroy()
 
 if __name__ == "__main__":
     App()
