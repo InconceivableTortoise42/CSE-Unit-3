@@ -55,7 +55,6 @@ class NetworkHandler:
     def processIncoming(self):
         while not self.queueIncoming.empty():
             data: dict = json.loads(self.queueIncoming.get())
-            print(data)
             self.master.runAction(data)
 
         self.master.after(100, self.processIncoming)

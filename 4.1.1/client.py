@@ -40,7 +40,7 @@ class App(tk.Tk):
 
         # Server
         subprocess.Popen(
-            'start cmd /k "uvicorn main:app --host 0.0.0.0"',
+            'start cmd /k "uvicorn main:app"',
             shell = True
         )
 
@@ -49,7 +49,7 @@ class App(tk.Tk):
         # Tunnel
 
         process = subprocess.Popen(
-            ["./cloudflared.exe", "tunnel", "--url", "http://0.0.0.0:8000"],
+            ["./cloudflared.exe", "tunnel", "--url", "http://localhost:8000", "--protocol", "http2"],
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT,
             text = True  
