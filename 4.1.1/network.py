@@ -2,6 +2,7 @@ from os import _exit
 import websockets
 import threading
 import asyncio
+from tkinter import messagebox
 import queue
 import json
 
@@ -40,17 +41,26 @@ class NetworkHandler:
             print("Disconnecting")
 
     async def wsHander(self):
-        try:
-            async with websockets.connect(self.wsURL) as websocket:
-                self.websocket = websocket
+        for attempt in range(10):
+            try:
+                async with websockets.connect(self.wsURL) as websocket:
+                    self.websocket = websocket
 
-                await asyncio.gather(
-                    self.sender(websocket),
-                    self.receiver(websocket)
-                )
-        
-        except OSError as error:
-            print(f"Network error: {error}") 
+                    await asyncio.gather(
+                        self.sender(websocket),
+                        self.receiver(websocket)
+                    )
+                    return  
+
+            except OSError as error:
+                print(f"Retry {attempt}: {error}")
+                await asyncio.sleep(3)
+
+        self.master.after(0, lambda: messagebox.showerror(
+            "Connection Error",
+            f"Failed to connect after retries:\n{self.wsURL}"
+        ))    
+
 
     def processIncoming(self):
         while not self.queueIncoming.empty():

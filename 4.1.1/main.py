@@ -51,3 +51,15 @@ async def websocketEndpoint(websocket: WebSocket):
     client = clientManager.addConnection(websocket)
 
     await clientManager.listen(client)
+
+@app.get("/")
+def get_clients():
+    return {
+        "clients": [
+            {
+                "id": client.id,
+                "name": client.name
+            }
+            for client in clientManager.clients
+        ]
+    }

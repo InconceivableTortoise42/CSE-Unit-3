@@ -13,9 +13,10 @@ import actions
 
 if TYPE_CHECKING:
     from tools import Tool
+    from client import App
 
 class Paint(tk.Frame):
-    def __init__(self, master: tk.Tk, wsUrl: str, network = False, *args, **kwargs):
+    def __init__(self, master: App, wsUrl: str, network = False, *args, **kwargs):
         super().__init__(master = master, *args, **kwargs)
 
         self.configure(background = "gray")

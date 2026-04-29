@@ -4,3 +4,6 @@ venv
 cloudflared.exe
 tunnel.bat
 .vscode
+build
+dist
+*.spec

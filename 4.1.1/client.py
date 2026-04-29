@@ -4,8 +4,11 @@ from typing import Callable
 from paint import Paint
 from tkinter import ttk
 import tkinter as tk
+from main import app
 import subprocess
 import threading
+import uvicorn
+import sys
 import re
 
 class App(tk.Tk):
@@ -34,32 +37,42 @@ class App(tk.Tk):
 
         self.bind("x", lambda _: self.paintScreen.colorBar.swapPrimarySecondary())
 
-        self.configure(menu = MenuBar())
+        self.configure(menu = MenuBar(self, network))
+    
+    def copyTunnelUrl(self):
+        if self.tunnelUrl:
+            self.clipboard_clear()
+            self.clipboard_append(self.tunnelUrl)
+            self.update()
+
+    def runUvicorn(self):
+        self.serverProcess = subprocess.Popen([
+            sys.executable,
+            "-m", "uvicorn",
+            "main:app",
+            "--host", "127.0.0.1",
+            "--port", "8000"
+        ])
 
     def launchServer(self, on_tunnel_ready: Callable[[str], None]) -> None:
 
         # Server
-        subprocess.Popen(
-            'start cmd /k "uvicorn main:app"',
-            shell = True
-        )
-
-        self.focus_force()
+        self.runUvicorn()
 
         # Tunnel
 
-        process = subprocess.Popen(
+        self.tunnelProcess = subprocess.Popen(
             ["./cloudflared.exe", "tunnel", "--url", "http://localhost:8000", "--protocol", "http2"],
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT,
-            text = True  
+            text = True
         )
 
         self.tunnelUrl = None
 
         # Stdout Thread
         def readOutput():
-            for line in process.stdout: # type: ignore
+            for line in self.tunnelProcess.stdout: # type: ignore
                 match = re.search(r"https://.*\.trycloudflare\.com", line)
                 if match:
                     self.tunnelUrl = match.group(0).replace("https://", "wss://")
@@ -89,8 +102,8 @@ class App(tk.Tk):
 
 
 class MenuBar(tk.Menu):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
+    def __init__(self, master: App, network: bool, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.configure(
             background = "darkgray",
@@ -101,8 +114,9 @@ class MenuBar(tk.Menu):
         # Sub Menus
         self.fileMenu = tk.Menu(self, tearoff = False)
         self.fileMenu.add_command(label = "New")
-        self.fileMenu.add_command(label = "Open")
         self.fileMenu.add_command(label = "Save")
+        if network:
+            self.fileMenu.add_command(label = "Copy join link.", command = master.copyTunnelUrl)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label = "Exit", command = self.master.quit)
 
