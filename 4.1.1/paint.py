@@ -2,13 +2,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from network import NetworkHandler
 from dataclasses import asdict
+from tkinter import filedialog
 from PIL import Image, ImageTk
 from colorbar import ColorBar
 from toolbar import ToolBar
 from point import Point
 import tkinter as tk
 import numpy as np
-import asyncio
 import actions
 
 if TYPE_CHECKING:
@@ -79,6 +79,16 @@ class Paint(tk.Frame):
             self.networkHandler.run()
 
         self.master.protocol("WM_DELETE_WINDOW", self.close)
+
+    def save(self):
+        filePath = filedialog.asksaveasfilename(
+            filetypes = [('PNG Files', '*.png'), ('JPEG Files', '*.jpg')], 
+            defaultextension = ".png",
+            title = "Save Image As"
+        )
+
+        image = Image.fromarray(self.buffer)
+        image.save(filePath)
 
     def close(self):
         self.master.destroy()
@@ -199,7 +209,7 @@ class Paint(tk.Frame):
         ).resize(
             (self.width, self.height),
               Image.NEAREST # type: ignore
-        ) 
+        )
 
         self.imageTK = ImageTk.PhotoImage(pilImage)
 

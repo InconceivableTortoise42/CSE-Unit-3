@@ -27,6 +27,10 @@ class App(tk.Tk):
 
 
         self.mainloop()
+    
+    def save(self):
+        if self.paintScreen:
+            self.paintScreen.save()
 
     def launchPaint(self, network: bool, wsUrl: str = "ws://localhost:8000"):
         self.mainMenu.destroy()
@@ -114,7 +118,7 @@ class MenuBar(tk.Menu):
         # Sub Menus
         self.fileMenu = tk.Menu(self, tearoff = False)
         self.fileMenu.add_command(label = "New")
-        self.fileMenu.add_command(label = "Save")
+        self.fileMenu.add_command(label = "Save", command = master.save)
         if network:
             self.fileMenu.add_command(label = "Copy join link.", command = master.copyTunnelUrl)
         self.fileMenu.add_separator()
