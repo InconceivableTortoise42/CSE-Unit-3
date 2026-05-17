@@ -31,6 +31,7 @@ class ToolBar(tk.Frame):
         self.toolIcons = [] # Made so that images aren't garbage collected
 
         # Names in order of image
+        # TODO: Implement rest of tools
         self.tools = {
             "freeform-selection": Tool(),
             "rectangular-selection": Tool(),
